@@ -69,12 +69,15 @@
   </div>
 
   <script>
-    const videos = [
+    const DEFAULT_VIDEOS = [
       { id:"v001", title:"Mirage A点 1v4 逆天残局", map:"Mirage", date:"2026-05-20", tags:["残局","五杀"], type:"youtube", src:"https://www.youtube.com/embed/aqz-KE-bpKQ", poster:"", baseLikes:128 },
       { id:"v002", title:"Dust2 AWP 中门三连狙", map:"Dust2", date:"2026-05-18", tags:["狙击"], type:"youtube", src:"https://www.youtube.com/embed/dQw4w9WgXcQ", poster:"", baseLikes:246 },
       { id:"v003", title:"Inferno B点四杀翻盘", map:"Inferno", date:"2026-05-16", tags:["残局"], type:"local", src:"assets/videos/highlight3.mp4", poster:"assets/posters/highlight3.jpg", baseLikes:66 },
       { id:"v004", title:"Nuke 外场偷人极限反杀", map:"Nuke", date:"2026-05-12", tags:["残局","偷人"], type:"local", src:"assets/videos/highlight4.mp4", poster:"assets/posters/highlight4.jpg", baseLikes:92 }
     ];
+
+    let videos = [...DEFAULT_VIDEOS];
+    const MANIFEST_URL = "assets/videos/manifest.json";
 
     const LS_LIKED = "csgo-liked";
     const LS_FAVS = "csgo-favs";
@@ -219,9 +222,66 @@
       }
     }
 
-    bindEvents();
-    render();
-    setTimeout(locateFromQuery, 100);
+    async function init(){
+      bindEvents();
+      await loadVideosFromManifest();
+      render();
+      setTimeout(locateFromQuery, 100);
+    }
+
+    init();
   </script>
 </body>
 </html>
+    function isAbsoluteUrl(path){
+      return /^https?:\/\//i.test(path || "");
+    }
+
+    function normalizeLocalPath(path, baseFolder){
+      const p = (path || "").trim();
+      if (!p) return "";
+      if (isAbsoluteUrl(p) || p.startsWith("assets/") || p.startsWith("./") || p.startsWith("../")) return p;
+      return `${baseFolder}/${p}`;
+    }
+
+    function guessTypeBySrc(src){
+      const value = (src || "").toLowerCase();
+      if (value.includes("youtube.com") || value.includes("youtu.be")) return "youtube";
+      return "local";
+    }
+
+    function normalizeVideoItem(item, index){
+      const src = normalizeLocalPath(item.src, "assets/videos");
+      const type = item.type || guessTypeBySrc(src);
+      const safeId = item.id || `video-${index + 1}`;
+      return {
+        id: safeId,
+        title: item.title || `未命名视频 ${index + 1}`,
+        map: item.map || "Unknown",
+        date: item.date || "1970-01-01",
+        tags: Array.isArray(item.tags) ? item.tags : [],
+        type,
+        src,
+        poster: normalizeLocalPath(item.poster, "assets/posters"),
+        baseLikes: Number(item.baseLikes) || 0
+      };
+    }
+
+    async function loadVideosFromManifest(){
+      try {
+        const response = await fetch(MANIFEST_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error(`manifest http ${response.status}`);
+
+        const raw = await response.json();
+        const list = Array.isArray(raw) ? raw : (Array.isArray(raw.videos) ? raw.videos : []);
+        if (!list.length) throw new Error("manifest videos empty");
+
+        videos = list.map(normalizeVideoItem).filter(v => !!v.src);
+        if (!videos.length) {
+          throw new Error("manifest videos invalid");
+        }
+      } catch (error) {
+        console.warn("加载 manifest 失败，回退默认数据:", error);
+        videos = [...DEFAULT_VIDEOS];
+      }
+    }
