@@ -10,6 +10,39 @@
       "src": "highlight1.mp4",
       "poster": "highlight1.png",
       "baseLikes": 999
+    },
+    {
+      "id": "local-002",
+      "title": "Do迪 沙二五杀 惊天操作",
+      "map": "沙二",
+      "date": "2026-05-18",
+      "tags": ["沙二", "五杀"],
+      "type": "local",
+      "src": "highlight2.mp4",
+      "poster": "highlight1.png",
+      "baseLikes": 9999
+    },
+    {
+      "id": "local-003",
+      "title": "路人对敌人视而不见",
+      "map": "沙二",
+      "date": "2026-05-20",
+      "tags": ["沙二", "电子近视", "内鬼"],
+      "type": "local",
+      "src": "video1.mp4",
+      "poster": "highlight1.png",
+      "baseLikes": -1
+    },
+    {
+      "id": "local-004",
+      "title": "牛头人喷子痛击队友",
+      "map": "沙二",
+      "date": "2026-05-20",
+      "tags": ["沙二", "内鬼"],
+      "type": "local",
+      "src": "video2.mp4",
+      "poster": "highlight1.png",
+      "baseLikes": -1
     }
   ]
 }
