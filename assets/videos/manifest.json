@@ -1,0 +1,26 @@
+{
+  "videos": [
+    {
+      "id": "local-001",
+      "title": "Mirage A点 1v4 逆天残局",
+      "map": "Mirage",
+      "date": "2026-05-20",
+      "tags": ["残局", "五杀"],
+      "type": "local",
+      "src": "highlight1.mp4",
+      "poster": "highlight1.jpg",
+      "baseLikes": 128
+    },
+    {
+      "id": "local-002",
+      "title": "Dust2 AWP 中门三连狙",
+      "map": "Dust2",
+      "date": "2026-05-18",
+      "tags": ["狙击"],
+      "type": "local",
+      "src": "highlight2.mp4",
+      "poster": "highlight2.jpg",
+      "baseLikes": 246
+    }
+  ]
+}
