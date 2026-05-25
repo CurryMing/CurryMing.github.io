@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSGO 高光集锦 - GitHub Pages</title>
+  <style>
+    :root{
+      --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+      --border:#2a303b; --accent:#ff7a00; --accent2:#00d4ff;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
+    .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
+    .hero{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+    .hero h1{margin:0 0 8px}.hero p{margin:0;color:var(--muted)}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+    .input,.btn,.select{
+      height:38px;border:1px solid var(--border);border-radius:10px;
+      background:#12161d;color:var(--text);padding:0 12px
+    }
+    .input{min-width:260px;flex:1}.btn{cursor:pointer}
+    .btn:hover{border-color:var(--accent2)}
+    .section{margin-top:18px}
+    .section-cover{
+      border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
+    }
+    .cover-bg{
+      height:110px;background-size:cover;background-position:center;position:relative
+    }
+    .cover-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2))}
+    .cover-title{position:absolute;left:14px;bottom:12px;z-index:1;font-size:20px;font-weight:700}
+    .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+    .card{border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:hidden}
+    .media{aspect-ratio:16/9;background:#0a0d12}
+    video,iframe{width:100%;height:100%;border:0;display:block;object-fit:cover}
+    .content{padding:10px 12px 12px}
+    .title{margin:0 0 8px;font-size:16px}
+    .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
+    .ops{display:flex;gap:8px;flex-wrap:wrap}
+    .op-btn{
+      border:1px solid var(--border);border-radius:999px;background:#202734;color:var(--text);
+      padding:4px 10px;font-size:12px;cursor:pointer
+    }
+    .op-btn.active{border-color:var(--accent2);color:#d7f8ff}
+    .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
+    .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.2)}
+    .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>CSGO 高光集锦（GitHub Pages）</h1>
+      <p>支持地图分类封面、点赞/收藏（本地保存）、一键复制分享链接。</p>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" class="input" placeholder="搜索标题 / 地图 / 标签" />
+      <select id="sort" class="select">
+        <option value="new">按日期（新到旧）</option>
+        <option value="hot">按热度（点赞）</option>
+      </select>
+      <button id="favOnlyBtn" class="btn">只看收藏</button>
+    </div>
+
+    <div id="app"></div>
+    <div class="footer">部署在 GitHub Pages 后即可公网访问</div>
+  </div>
+
+  <script>
+    const videos = [
+      { id:"v001", title:"Mirage A点 1v4 逆天残局", map:"Mirage", date:"2026-05-20", tags:["残局","五杀"], type:"youtube", src:"https://www.youtube.com/embed/aqz-KE-bpKQ", poster:"", baseLikes:128 },
+      { id:"v002", title:"Dust2 AWP 中门三连狙", map:"Dust2", date:"2026-05-18", tags:["狙击"], type:"youtube", src:"https://www.youtube.com/embed/dQw4w9WgXcQ", poster:"", baseLikes:246 },
+      { id:"v003", title:"Inferno B点四杀翻盘", map:"Inferno", date:"2026-05-16", tags:["残局"], type:"local", src:"assets/videos/highlight3.mp4", poster:"assets/posters/highlight3.jpg", baseLikes:66 },
+      { id:"v004", title:"Nuke 外场偷人极限反杀", map:"Nuke", date:"2026-05-12", tags:["残局","偷人"], type:"local", src:"assets/videos/highlight4.mp4", poster:"assets/posters/highlight4.jpg", baseLikes:92 }
+    ];
+
+    const LS_LIKED = "csgo-liked";
+    const LS_FAVS = "csgo-favs";
+    const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
+    const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
+    let favOnly = false;
+
+    const elApp = document.getElementById("app");
+    const elSearch = document.getElementById("search");
+    const elSort = document.getElementById("sort");
+    const elFavOnlyBtn = document.getElementById("favOnlyBtn");
+
+    function save() {
+      localStorage.setItem(LS_LIKED, JSON.stringify([...liked]));
+      localStorage.setItem(LS_FAVS, JSON.stringify([...favs]));
+    }
+
+    function getLikeCount(v){ return v.baseLikes + (liked.has(v.id) ? 1 : 0); }
+
+    function ytThumb(url){
+      const m = url.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+      return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : "";
+    }
+
+    function coverForMap(items){
+      const first = items[0];
+      if (!first) return "";
+      if (first.poster) return first.poster;
+      if (first.type === "youtube") return ytThumb(first.src);
+      return "";
+    }
+
+    function groupByMap(arr){
+      const m = new Map();
+      arr.forEach(v => { if(!m.has(v.map)) m.set(v.map, []); m.get(v.map).push(v); });
+      return [...m.entries()];
+    }
+
+    function filteredData(){
+      const q = elSearch.value.trim().toLowerCase();
+      let arr = videos.filter(v => {
+        if (favOnly && !favs.has(v.id)) return false;
+        if (!q) return true;
+        const text = [v.title, v.map, ...(v.tags||[])].join(" ").toLowerCase();
+        return text.includes(q);
+      });
+
+      if (elSort.value === "hot") arr.sort((a,b)=>getLikeCount(b)-getLikeCount(a));
+      else arr.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+
+      return arr;
+    }
+
+    function cardHtml(v){
+      const media = v.type === "youtube"
+        ? `<iframe loading="lazy" src="${v.src}" title="${v.title}" allowfullscreen></iframe>`
+        : `<video controls preload="metadata" poster="${v.poster||""}"><source src="${v.src}" type="video/mp4" /></video>`;
+
+      return `
+      <article class="card" id="card-${v.id}">
+        <div class="media">${media}</div>
+        <div class="content">
+          <h3 class="title">${v.title}</h3>
+          <div class="meta"><span>${v.date}</span><span>${v.map}</span></div>
+          <div style="margin-bottom:8px">${(v.tags||[]).map(t=>`<span class="pill">${t}</span>`).join("")}</div>
+          <div class="ops">
+            <button class="op-btn ${liked.has(v.id) ? "active":""}" data-action="like" data-id="${v.id}">👍 点赞 ${getLikeCount(v)}</button>
+            <button class="op-btn ${favs.has(v.id) ? "active":""}" data-action="fav" data-id="${v.id}">${favs.has(v.id) ? "★ 已收藏" : "☆ 收藏"}</button>
+            <button class="op-btn" data-action="share" data-id="${v.id}">🔗 分享</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function render(){
+      const arr = filteredData();
+      const groups = groupByMap(arr);
+
+      if (!arr.length){
+        elApp.innerHTML = `<div class="section-cover"><div class="cover-sub">没有匹配结果，换个关键词试试。</div></div>`;
+        return;
+      }
+
+      elApp.innerHTML = groups.map(([map, items])=>{
+        const cover = coverForMap(items);
+        return `
+          <section class="section">
+            <div class="section-cover">
+              <div class="cover-bg" style="background-image:url('${cover || ""}')">
+                <div class="cover-title">${map}</div>
+              </div>
+              <div class="cover-sub">共 ${items.length} 条高光</div>
+            </div>
+            <div class="grid">${items.map(cardHtml).join("")}</div>
+          </section>`;
+      }).join("");
+    }
+
+    async function shareVideo(id){
+      const url = `${location.origin}${location.pathname}?v=${encodeURIComponent(id)}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("已复制分享链接：\n" + url);
+      } catch {
+        prompt("复制以下链接分享：", url);
+      }
+    }
+
+    function bindEvents(){
+      elSearch.addEventListener("input", render);
+      elSort.addEventListener("change", render);
+      elFavOnlyBtn.addEventListener("click", ()=>{
+        favOnly = !favOnly;
+        elFavOnlyBtn.textContent = favOnly ? "显示全部" : "只看收藏";
+        render();
+      });
+
+      document.addEventListener("click", (e)=>{
+        const btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        const { action, id } = btn.dataset;
+        if (action === "like"){
+          liked.has(id) ? liked.delete(id) : liked.add(id);
+          save(); render();
+        } else if (action === "fav"){
+          favs.has(id) ? favs.delete(id) : favs.add(id);
+          save(); render();
+        } else if (action === "share"){
+          shareVideo(id);
+        }
+      });
+    }
+
+    function locateFromQuery(){
+      const id = new URLSearchParams(location.search).get("v");
+      if (!id) return;
+      const target = document.getElementById(`card-${id}`);
+      if (target){
+        target.scrollIntoView({behavior:"smooth", block:"center"});
+        target.classList.add("highlight");
+        setTimeout(()=>target.classList.remove("highlight"), 2200);
+      }
+    }
+
+    bindEvents();
+    render();
+    setTimeout(locateFromQuery, 100);
+  </script>
+</body>
+</html>
