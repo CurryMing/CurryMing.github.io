@@ -19,7 +19,7 @@
       "tags": ["沙二", "五杀"],
       "type": "local",
       "src": "highlight2.mp4",
-      "poster": "highlight1.png",
+      "poster": "highlight2.png",
       "baseLikes": 9999
     },
     {
@@ -41,7 +41,7 @@
       "tags": ["沙二", "内鬼"],
       "type": "local",
       "src": "video2.mp4",
-      "poster": "highlight1.png",
+      "poster": "video2.png",
       "baseLikes": -1
     }
   ]
