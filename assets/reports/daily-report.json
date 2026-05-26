@@ -1,0 +1,11 @@
+{
+  "date": "2026-05-24",
+  "myRounds": 13,
+  "enemyRounds": 10,
+  "result": "胜利",
+  "players": [
+    { "name": "蜡笔小鑫", "k": 23, "d": 17, "a": 8, "rating": 2.34 },
+    { "name": "勇敢的牛头人", "k": 23, "d": 17, "a": 8, "rating": 3.34 },
+    { "name": "Do迪", "k": 0, "d": 17, "a": 8, "rating": 1.34 }
+  ]
+}
