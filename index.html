@@ -21,8 +21,22 @@
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
-        .hero{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
-        .hero h1{margin:0 0 8px}.hero p{margin:0;color:var(--muted)}
+        .hero{
+            margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+            padding:22px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+            background:linear-gradient(120deg,rgba(255,255,255,.04),rgba(255,255,255,.01) 42%),var(--card)
+        }
+        .hero-inner{width:min(1200px,92%);margin:0 auto}
+        .hero h1{
+            margin:0 0 10px;font-size:clamp(30px,5.6vw,54px);line-height:1.05;font-weight:900;letter-spacing:.8px;
+            color:#fff;text-shadow:none;-webkit-text-stroke:.8px rgba(0,0,0,.45)
+        }
+        .hero p{margin:0;max-width:760px;color:var(--muted);font-size:15px;line-height:1.6}
+        @media (max-width:720px){
+            .hero{padding:16px 0}
+            .hero h1{letter-spacing:.3px}
+            .hero p{font-size:14px;line-height:1.55}
+        }
         .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
         .input,.btn,.select{
             height:38px;border:1px solid var(--border);border-radius:10px;
@@ -36,6 +50,12 @@
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
         }
+        .section-cover-spacer{height:0}
+        .section.map-pinned .section-cover{
+            position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:1200;
+            width:min(1200px,92vw);box-shadow:0 10px 28px rgba(0,0,0,.28)
+        }
+        .section.map-pinned .section-cover-spacer{height:var(--pin-cover-h, 0px)}
         .section-cover.clickable{cursor:pointer;user-select:none}
         .cover-bg{
             height:110px;background-size:cover;background-position:center;position:relative
@@ -129,8 +149,10 @@
 <body>
 <div class="wrap">
     <div class="hero">
-        <h1>CSGO 高光集锦</h1>
-        <p>支持地图分类封面、点赞/收藏（本地保存）、一键复制分享链接。</p>
+        <div class="hero-inner">
+            <h1>CSGO 高光集锦</h1>
+            <p>支持地图分类封面、点赞与收藏（本地保存），并可一键复制分享链接，快速定位每一条精彩镜头。</p>
+        </div>
     </div>
 
     <div class="toolbar">
@@ -162,6 +184,10 @@
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
+    const cardVisibility = new Map();
+    let cardObserver = null;
+    let pinnedMapKey = "";
+    let pinUpdateRaf = 0;
     const comboState = {
         like: { count: 0, lastAt: 0, timer: null },
         fav: { count: 0, lastAt: 0, timer: null }
@@ -330,13 +356,13 @@
         return arr;
     }
 
-    function cardHtml(v, idx){
+    function cardHtml(v, idx, mapKey){
         const media = v.type === "youtube"
             ? `<iframe loading="lazy" src="${v.src}" title="${v.title}" allowfullscreen></iframe>`
             : `<video controls preload="metadata" poster="${v.poster||""}"><source src="${v.src}" type="video/mp4" /></video>`;
 
         return `
-      <article class="card" id="card-${v.id}" style="--i:${idx};">
+      <article class="card" id="card-${v.id}" data-map-key="${mapKey}" style="--i:${idx};">
         <div class="media">${media}</div>
         <div class="content">
           <h3 class="title">${v.title}</h3>
@@ -355,8 +381,12 @@
         const arr = filteredData();
         const groups = groupByMap(arr);
 
+        pinnedMapKey = "";
+        cardVisibility.clear();
+
         if (!arr.length){
             elApp.innerHTML = `<div class="section-cover"><div class="cover-sub">没有匹配结果，换个关键词试试。</div></div>`;
+            if (cardObserver) cardObserver.disconnect();
             return;
         }
 
@@ -366,16 +396,101 @@
             const cover = coverForMap(map, items);
             const displayName = mapNameForDisplay(map);
             return `
-          <section class="section">
+          <section class="section" data-map-key="${mapKey}">
             <div class="section-cover clickable" data-action="toggle-map" data-map-key="${mapKey}">
               <div class="cover-bg" style="background-image:url('${cover || ""}')">
                 <div class="cover-title">${displayName}</div>
               </div>
               <div class="cover-sub" data-count="${items.length}">共 ${items.length} 条高光 · ${collapsed ? "点击展开" : "点击折叠"}</div>
             </div>
-            <div class="grid ${collapsed ? "collapsed" : ""}">${items.map((v, idx)=>cardHtml(v, idx)).join("")}</div>
+            <div class="section-cover-spacer" aria-hidden="true"></div>
+            <div class="grid ${collapsed ? "collapsed" : ""}">${items.map((v, idx)=>cardHtml(v, idx, mapKey)).join("")}</div>
           </section>`;
         }).join("");
+
+        setupCardObserver();
+    }
+
+    function applyPinnedMap(nextMapKey){
+        if (pinnedMapKey === nextMapKey) return;
+
+        document.querySelectorAll(".section.map-pinned").forEach(section => {
+            section.classList.remove("map-pinned");
+            section.style.removeProperty("--pin-cover-h");
+        });
+
+        pinnedMapKey = "";
+        if (!nextMapKey) return;
+
+        const targetSection = [...document.querySelectorAll(".section")].find(section => section.dataset.mapKey === nextMapKey);
+        if (!targetSection) return;
+        const coverEl = targetSection.querySelector(".section-cover");
+        if (!coverEl) return;
+
+        targetSection.style.setProperty("--pin-cover-h", `${coverEl.offsetHeight}px`);
+        targetSection.classList.add("map-pinned");
+        pinnedMapKey = nextMapKey;
+    }
+
+    function updatePinnedMapByVisibleCards(){
+        let total = 0;
+        const scoreByMap = new Map();
+
+        cardVisibility.forEach((ratio, cardEl) => {
+            if (!ratio || ratio <= 0) return;
+            const mapKey = cardEl.dataset.mapKey;
+            if (!mapKey) return;
+            const score = Math.min(1, ratio);
+            total += score;
+            scoreByMap.set(mapKey, (scoreByMap.get(mapKey) || 0) + score);
+        });
+
+        if (total < 0.8) {
+            applyPinnedMap("");
+            return;
+        }
+
+        let winnerKey = "";
+        let winnerScore = 0;
+        scoreByMap.forEach((score, mapKey) => {
+            if (score > winnerScore) {
+                winnerScore = score;
+                winnerKey = mapKey;
+            }
+        });
+
+        if (!winnerKey || winnerScore / total < 0.5) {
+            applyPinnedMap("");
+            return;
+        }
+
+        applyPinnedMap(winnerKey);
+    }
+
+    function schedulePinnedMapUpdate(){
+        if (pinUpdateRaf) return;
+        pinUpdateRaf = requestAnimationFrame(() => {
+            pinUpdateRaf = 0;
+            updatePinnedMapByVisibleCards();
+        });
+    }
+
+    function setupCardObserver(){
+        if (cardObserver) cardObserver.disconnect();
+        cardVisibility.clear();
+
+        const thresholds = [];
+        for (let i = 0; i <= 10; i++) thresholds.push(i / 10);
+
+        cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                cardVisibility.set(entry.target, entry.intersectionRatio);
+            });
+            schedulePinnedMapUpdate();
+        }, { threshold: thresholds });
+
+        document.querySelectorAll(".card[data-map-key]").forEach(card => cardObserver.observe(card));
+        schedulePinnedMapUpdate();
     }
 
     async function shareVideo(id){
@@ -549,6 +664,7 @@
     async function init(){
         initTheme();
         bindEvents();
+        window.addEventListener("resize", schedulePinnedMapUpdate);
         await loadVideosFromManifest();
         render();
         setTimeout(locateFromQuery, 100);
