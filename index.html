@@ -47,6 +47,33 @@
         }
         .input{min-width:260px;flex:1}.btn{cursor:pointer}
         .btn:hover{border-color:var(--accent2)}
+        .select{
+            border-radius:12px;appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:36px;
+            background-image:
+                linear-gradient(135deg, transparent 50%, var(--muted) 50%),
+                linear-gradient(45deg, var(--muted) 50%, transparent 50%),
+                linear-gradient(120deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+            background-position:
+                calc(100% - 18px) 16px,
+                calc(100% - 12px) 16px,
+                0 0;
+            background-size:6px 6px,6px 6px,100% 100%;
+            background-repeat:no-repeat;
+            transition:border-color .22s ease, box-shadow .22s ease, transform .16s ease, background-color .22s ease;
+        }
+        .select:hover{border-color:var(--accent2);transform:translateY(-1px)}
+        .select:focus,
+        .select:focus-visible{
+            outline:none;border-color:var(--accent2);
+            box-shadow:0 0 0 3px rgba(0,212,255,.18), 0 8px 20px rgba(0,0,0,.16);
+            animation:selectGlow .24s ease-out;
+        }
+        .select option{background:var(--card);color:var(--text)}
+        @keyframes selectGlow{
+            0%{transform:translateY(0) scale(1)}
+            60%{transform:translateY(-1px) scale(1.01)}
+            100%{transform:translateY(0) scale(1)}
+        }
         .theme-icon-btn{width:38px;padding:0;display:flex;align-items:center;justify-content:center}
         .theme-icon{font-size:16px;line-height:1}
         .section{margin-top:18px}
@@ -156,6 +183,7 @@
         <input id="search" class="input" placeholder="搜索标题 / 地图 / 标签" />
         <select id="sort" class="select">
             <option value="new">按日期（新到旧）</option>
+            <option value="old">按日期（旧到新）</option>
             <option value="hot">按热度（点赞）</option>
         </select>
         <button id="favOnlyBtn" class="btn">只看收藏</button>
@@ -344,6 +372,7 @@
         });
 
         if (elSort.value === "hot") arr.sort((a,b)=>getLikeCount(b)-getLikeCount(a));
+        else if (elSort.value === "old") arr.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
         else arr.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
 
         return arr;
