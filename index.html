@@ -16,8 +16,9 @@
             --fav-btn-active-bg:#00d4ff; --fav-btn-active-border:#00d4ff; --fav-btn-active-text:#07131e;
             --map-box-accent:#ff78b4;
             --map-box-bg:linear-gradient(135deg,#1c1725,#18242f);
-            --map-sub-bg:rgba(0,0,0,.16);
-            --map-sub-text:#d6c7cf;
+            --map-sub-bg:rgba(16,21,30,.62);
+            --map-sub-text:#e8dce4;
+            --map-sub-line:rgba(255,255,255,.14);
         }
         :root[data-theme="light"]{
             --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
@@ -29,8 +30,9 @@
             --fav-btn-active-bg:#1e8dff; --fav-btn-active-border:#1e8dff; --fav-btn-active-text:#ffffff;
             --map-box-accent:#d45a94;
             --map-box-bg:linear-gradient(135deg,#ffffff,#f7faff);
-            --map-sub-bg:rgba(255,255,255,.9);
-            --map-sub-text:#5a6d84;
+            --map-sub-bg:rgba(244,248,255,.78);
+            --map-sub-text:#3d5068;
+            --map-sub-line:rgba(100,124,152,.28);
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
@@ -115,7 +117,10 @@
             -webkit-background-clip:text;background-clip:text;color:transparent;
             text-shadow:0 5px 16px rgba(0,0,0,.45)
         }
-        .cover-sub{padding:10px 14px;color:var(--map-sub-text);font-size:13px;background:var(--map-sub-bg)}
+        .cover-sub{
+            padding:10px 14px;color:var(--map-sub-text);font-size:13px;background:var(--map-sub-bg);
+            border-top:1px solid var(--map-sub-line);backdrop-filter:blur(4px)
+        }
         .grid{
             display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;
             overflow:hidden;max-height:5000px;opacity:1;
