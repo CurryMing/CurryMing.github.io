@@ -1,74 +1,74 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSGO 高光集锦</title>
-  <style>
-    :root{
-      --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
-      --border:#2a303b; --accent:#ff7a00; --accent2:#00d4ff;
-    }
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
-    .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
-    .hero{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
-    .hero h1{margin:0 0 8px}.hero p{margin:0;color:var(--muted)}
-    .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
-    .input,.btn,.select{
-      height:38px;border:1px solid var(--border);border-radius:10px;
-      background:#12161d;color:var(--text);padding:0 12px
-    }
-    .input{min-width:260px;flex:1}.btn{cursor:pointer}
-    .btn:hover{border-color:var(--accent2)}
-    .section{margin-top:18px}
-    .section-cover{
-      border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
-    }
-    .cover-bg{
-      height:110px;background-size:cover;background-position:center;position:relative
-    }
-    .cover-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2))}
-    .cover-title{position:absolute;left:14px;bottom:12px;z-index:1;font-size:20px;font-weight:700}
-    .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-    .card{border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:hidden}
-    .media{aspect-ratio:16/9;background:#0a0d12}
-    video,iframe{width:100%;height:100%;border:0;display:block;object-fit:cover}
-    .content{padding:10px 12px 12px}
-    .title{margin:0 0 8px;font-size:16px}
-    .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
-    .ops{display:flex;gap:8px;flex-wrap:wrap}
-    .op-btn{
-      border:1px solid var(--border);border-radius:999px;background:#202734;color:var(--text);
-      padding:4px 10px;font-size:12px;cursor:pointer
-    }
-    .op-btn.active{border-color:var(--accent2);color:#d7f8ff}
-    .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
-    .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.2)}
-    .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSGO 高光集锦</title>
+    <style>
+        :root{
+            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+            --border:#2a303b; --accent:#ff7a00; --accent2:#00d4ff;
+        }
+        *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
+        .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
+        .hero{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+        .hero h1{margin:0 0 8px}.hero p{margin:0;color:var(--muted)}
+        .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+        .input,.btn,.select{
+            height:38px;border:1px solid var(--border);border-radius:10px;
+            background:#12161d;color:var(--text);padding:0 12px
+        }
+        .input{min-width:260px;flex:1}.btn{cursor:pointer}
+        .btn:hover{border-color:var(--accent2)}
+        .section{margin-top:18px}
+        .section-cover{
+            border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
+        }
+        .cover-bg{
+            height:110px;background-size:cover;background-position:center;position:relative
+        }
+        .cover-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2))}
+        .cover-title{position:absolute;left:14px;bottom:12px;z-index:1;font-size:20px;font-weight:700}
+        .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+        .card{border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:hidden}
+        .media{aspect-ratio:16/9;background:#0a0d12}
+        video,iframe{width:100%;height:100%;border:0;display:block;object-fit:cover}
+        .content{padding:10px 12px 12px}
+        .title{margin:0 0 8px;font-size:16px}
+        .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
+        .ops{display:flex;gap:8px;flex-wrap:wrap}
+        .op-btn{
+            border:1px solid var(--border);border-radius:999px;background:#202734;color:var(--text);
+            padding:4px 10px;font-size:12px;cursor:pointer
+        }
+        .op-btn.active{border-color:var(--accent2);color:#d7f8ff}
+        .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
+        .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.2)}
+        .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+    </style>
 </head>
 <body>
-  <div class="wrap">
+<div class="wrap">
     <div class="hero">
-      <h1>CSGO 高光集锦</h1>
-      <p>支持地图分类封面、点赞/收藏（本地保存）、一键复制分享链接。</p>
+        <h1>CSGO 高光集锦</h1>
+        <p>支持地图分类封面、点赞/收藏（本地保存）、一键复制分享链接。</p>
     </div>
 
     <div class="toolbar">
-      <input id="search" class="input" placeholder="搜索标题 / 地图 / 标签" />
-      <select id="sort" class="select">
-        <option value="new">按日期（新到旧）</option>
-        <option value="hot">按热度（点赞）</option>
-      </select>
-      <button id="favOnlyBtn" class="btn">只看收藏</button>
+        <input id="search" class="input" placeholder="搜索标题 / 地图 / 标签" />
+        <select id="sort" class="select">
+            <option value="new">按日期（新到旧）</option>
+            <option value="hot">按热度（点赞）</option>
+        </select>
+        <button id="favOnlyBtn" class="btn">只看收藏</button>
     </div>
 
     <div id="app"></div>
     <div class="footer"></div>
-  </div>
+</div>
 
-  <script>
+<script>
     const DEFAULT_VIDEOS = [];
 
     let videos = [...DEFAULT_VIDEOS];
@@ -86,105 +86,128 @@
     const elFavOnlyBtn = document.getElementById("favOnlyBtn");
 
     function save() {
-      localStorage.setItem(LS_LIKED, JSON.stringify([...liked]));
-      localStorage.setItem(LS_FAVS, JSON.stringify([...favs]));
+        localStorage.setItem(LS_LIKED, JSON.stringify([...liked]));
+        localStorage.setItem(LS_FAVS, JSON.stringify([...favs]));
     }
 
     function getLikeCount(v){ return v.baseLikes + (liked.has(v.id) ? 1 : 0); }
 
     function ytThumb(url){
-      const m = url.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
-      return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : "";
+        const m = url.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+        return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : "";
     }
 
-    function coverForMap(items){
-      const first = items[0];
-      if (!first) return "";
-      if (first.poster) return first.poster;
-      if (first.type === "youtube") return ytThumb(first.src);
-      return "";
+    const MAP_COVER_BY_MAP = {
+        // 按地图名指定顶部封面（可按需修改路径）
+        mirage: "assets/map-covers/mirage.jpg",
+        dust2: "assets/map-covers/dust2.jpg",
+        inferno: "assets/map-covers/inferno.jpg",
+        nuke: "assets/map-covers/nuke.jpg",
+        ancient: "assets/map-covers/ancient.jpg",
+        anubis: "assets/map-covers/anubis.jpg",
+        overpass: "assets/map-covers/overpass.jpg",
+        vertigo: "assets/map-covers/vertigo.jpg"
+    };
+
+    function normalizeMapKey(map){
+        return (map || "")
+            .toLowerCase()
+            .replace(/^de_/, "")
+            .replace(/\s+/g, "")
+            .replace(/[^a-z0-9]/g, "");
+    }
+
+    function coverForMap(map, items){
+        const mappedCover = MAP_COVER_BY_MAP[normalizeMapKey(map)];
+        if (mappedCover) return mappedCover;
+
+        const first = items[0];
+        if (!first) return "";
+        if (first.poster) return first.poster;
+        if (first.type === "youtube") return ytThumb(first.src);
+        return "";
     }
 
     function groupByMap(arr){
-      const m = new Map();
-      arr.forEach(v => { if(!m.has(v.map)) m.set(v.map, []); m.get(v.map).push(v); });
-      return [...m.entries()];
+        const m = new Map();
+        arr.forEach(v => { if(!m.has(v.map)) m.set(v.map, []); m.get(v.map).push(v); });
+        return [...m.entries()];
     }
 
     function isAbsoluteUrl(path){
-      return /^https?:\/\//i.test(path || "");
+        return /^https?:\/\//i.test(path || "");
     }
 
     function normalizeLocalPath(path, baseFolder){
-      const p = (path || "").trim();
-      if (!p) return "";
-      if (isAbsoluteUrl(p) || p.startsWith("assets/") || p.startsWith("./") || p.startsWith("../")) return p;
-      return `${baseFolder}/${p}`;
+        const p = (path || "").trim();
+        if (!p) return "";
+        if (isAbsoluteUrl(p) || p.startsWith("assets/") || p.startsWith("./") || p.startsWith("../")) return p;
+        return `${baseFolder}/${p}`;
     }
 
     function guessTypeBySrc(src){
-      const value = (src || "").toLowerCase();
-      if (value.includes("youtube.com") || value.includes("youtu.be")) return "youtube";
-      return "local";
+        const value = (src || "").toLowerCase();
+        if (value.includes("youtube.com") || value.includes("youtu.be")) return "youtube";
+        return "local";
     }
 
     function normalizeVideoItem(item, index){
-      const src = normalizeLocalPath(item.src, "assets/videos");
-      const type = item.type || guessTypeBySrc(src);
-      const safeId = item.id || `video-${index + 1}`;
-      return {
-        id: safeId,
-        title: item.title || `未命名视频 ${index + 1}`,
-        map: item.map || "Unknown",
-        date: item.date || "1970-01-01",
-        tags: Array.isArray(item.tags) ? item.tags : [],
-        type,
-        src,
-        poster: normalizeLocalPath(item.poster, "assets/posters"),
-        baseLikes: Number(item.baseLikes) || 0
-      };
+        const src = normalizeLocalPath(item.src, "assets/videos");
+        const type = item.type || guessTypeBySrc(src);
+        const safeId = item.id || `video-${index + 1}`;
+        return {
+            id: safeId,
+            title: item.title || `未命名视频 ${index + 1}`,
+            map: item.map || "Unknown",
+            date: item.date || "1970-01-01",
+            tags: Array.isArray(item.tags) ? item.tags : [],
+            type,
+            src,
+            poster: normalizeLocalPath(item.poster, "assets/posters"),
+            baseLikes: Number(item.baseLikes) || 0
+        };
     }
 
     async function loadVideosFromManifest(){
-      try {
-        const response = await fetch(MANIFEST_URL, { cache: "no-store" });
-        if (!response.ok) throw new Error(`manifest http ${response.status}`);
+        try {
+            const response = await fetch(MANIFEST_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error(`manifest http ${response.status}`);
 
-        const raw = await response.json();
-        const list = Array.isArray(raw) ? raw : (Array.isArray(raw.videos) ? raw.videos : []);
-        if (!list.length) throw new Error("manifest videos empty");
+            const raw = await response.json();
+            const list = Array.isArray(raw) ? raw : (Array.isArray(raw.videos) ? raw.videos : []);
+            if (!list.length) throw new Error("manifest videos empty");
 
-        videos = list.map(normalizeVideoItem).filter(v => !!v.src);
-        if (!videos.length) {
-          throw new Error("manifest videos invalid");
+            videos = list.map(normalizeVideoItem).filter(v => !!v.src);
+            if (!videos.length) {
+                throw new Error("manifest videos invalid");
+            }
+        } catch (error) {
+            console.warn("加载 manifest 失败，当前没有默认视频数据:", error);
+            videos = [...DEFAULT_VIDEOS];
         }
-      } catch (error) {
-        console.warn("加载 manifest 失败，当前没有默认视频数据:", error);
-        videos = [...DEFAULT_VIDEOS];
-      }
     }
 
     function filteredData(){
-      const q = elSearch.value.trim().toLowerCase();
-      let arr = videos.filter(v => {
-        if (favOnly && !favs.has(v.id)) return false;
-        if (!q) return true;
-        const text = [v.title, v.map, ...(v.tags||[])].join(" ").toLowerCase();
-        return text.includes(q);
-      });
+        const q = elSearch.value.trim().toLowerCase();
+        let arr = videos.filter(v => {
+            if (favOnly && !favs.has(v.id)) return false;
+            if (!q) return true;
+            const text = [v.title, v.map, ...(v.tags||[])].join(" ").toLowerCase();
+            return text.includes(q);
+        });
 
-      if (elSort.value === "hot") arr.sort((a,b)=>getLikeCount(b)-getLikeCount(a));
-      else arr.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+        if (elSort.value === "hot") arr.sort((a,b)=>getLikeCount(b)-getLikeCount(a));
+        else arr.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
 
-      return arr;
+        return arr;
     }
 
     function cardHtml(v){
-      const media = v.type === "youtube"
-        ? `<iframe loading="lazy" src="${v.src}" title="${v.title}" allowfullscreen></iframe>`
-        : `<video controls preload="metadata" poster="${v.poster||""}"><source src="${v.src}" type="video/mp4" /></video>`;
+        const media = v.type === "youtube"
+            ? `<iframe loading="lazy" src="${v.src}" title="${v.title}" allowfullscreen></iframe>`
+            : `<video controls preload="metadata" poster="${v.poster||""}"><source src="${v.src}" type="video/mp4" /></video>`;
 
-      return `
+        return `
       <article class="card" id="card-${v.id}">
         <div class="media">${media}</div>
         <div class="content">
@@ -201,17 +224,17 @@
     }
 
     function render(){
-      const arr = filteredData();
-      const groups = groupByMap(arr);
+        const arr = filteredData();
+        const groups = groupByMap(arr);
 
-      if (!arr.length){
-        elApp.innerHTML = `<div class="section-cover"><div class="cover-sub">没有匹配结果，换个关键词试试。</div></div>`;
-        return;
-      }
+        if (!arr.length){
+            elApp.innerHTML = `<div class="section-cover"><div class="cover-sub">没有匹配结果，换个关键词试试。</div></div>`;
+            return;
+        }
 
-      elApp.innerHTML = groups.map(([map, items])=>{
-        const cover = coverForMap(items);
-        return `
+        elApp.innerHTML = groups.map(([map, items])=>{
+            const cover = coverForMap(map, items);
+            return `
           <section class="section">
             <div class="section-cover">
               <div class="cover-bg" style="background-image:url('${cover || ""}')">
@@ -221,63 +244,63 @@
             </div>
             <div class="grid">${items.map(cardHtml).join("")}</div>
           </section>`;
-      }).join("");
+        }).join("");
     }
 
     async function shareVideo(id){
-      const url = `${location.origin}${location.pathname}?v=${encodeURIComponent(id)}`;
-      try {
-        await navigator.clipboard.writeText(url);
-        alert("已复制分享链接：\n" + url);
-      } catch {
-        prompt("复制以下链接分享：", url);
-      }
+        const url = `${location.origin}${location.pathname}?v=${encodeURIComponent(id)}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            alert("已复制分享链接：\n" + url);
+        } catch {
+            prompt("复制以下链接分享：", url);
+        }
     }
 
     function bindEvents(){
-      elSearch.addEventListener("input", render);
-      elSort.addEventListener("change", render);
-      elFavOnlyBtn.addEventListener("click", ()=>{
-        favOnly = !favOnly;
-        elFavOnlyBtn.textContent = favOnly ? "显示全部" : "只看收藏";
-        render();
-      });
+        elSearch.addEventListener("input", render);
+        elSort.addEventListener("change", render);
+        elFavOnlyBtn.addEventListener("click", ()=>{
+            favOnly = !favOnly;
+            elFavOnlyBtn.textContent = favOnly ? "显示全部" : "只看收藏";
+            render();
+        });
 
-      document.addEventListener("click", (e)=>{
-        const btn = e.target.closest("[data-action]");
-        if (!btn) return;
-        const { action, id } = btn.dataset;
-        if (action === "like"){
-          liked.has(id) ? liked.delete(id) : liked.add(id);
-          save(); render();
-        } else if (action === "fav"){
-          favs.has(id) ? favs.delete(id) : favs.add(id);
-          save(); render();
-        } else if (action === "share"){
-          shareVideo(id);
-        }
-      });
+        document.addEventListener("click", (e)=>{
+            const btn = e.target.closest("[data-action]");
+            if (!btn) return;
+            const { action, id } = btn.dataset;
+            if (action === "like"){
+                liked.has(id) ? liked.delete(id) : liked.add(id);
+                save(); render();
+            } else if (action === "fav"){
+                favs.has(id) ? favs.delete(id) : favs.add(id);
+                save(); render();
+            } else if (action === "share"){
+                shareVideo(id);
+            }
+        });
     }
 
     function locateFromQuery(){
-      const id = new URLSearchParams(location.search).get("v");
-      if (!id) return;
-      const target = document.getElementById(`card-${id}`);
-      if (target){
-        target.scrollIntoView({behavior:"smooth", block:"center"});
-        target.classList.add("highlight");
-        setTimeout(()=>target.classList.remove("highlight"), 2200);
-      }
+        const id = new URLSearchParams(location.search).get("v");
+        if (!id) return;
+        const target = document.getElementById(`card-${id}`);
+        if (target){
+            target.scrollIntoView({behavior:"smooth", block:"center"});
+            target.classList.add("highlight");
+            setTimeout(()=>target.classList.remove("highlight"), 2200);
+        }
     }
 
     async function init(){
-      bindEvents();
-      await loadVideosFromManifest();
-      render();
-      setTimeout(locateFromQuery, 100);
+        bindEvents();
+        await loadVideosFromManifest();
+        render();
+        setTimeout(locateFromQuery, 100);
     }
 
     init();
-  </script>
+</script>
 </body>
 </html>
