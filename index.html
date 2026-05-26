@@ -107,11 +107,16 @@
         .cover-bg::after{content:"";position:absolute;inset:0;background:var(--cover-overlay)}
         .cover-title{
             position:absolute;left:14px;bottom:10px;z-index:1;font-size:clamp(28px,4.2vw,38px);font-weight:800;
-            letter-spacing:.5px;color:#ffd7a0;background:var(--map-title-grad);
-            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+            letter-spacing:.5px;color:#ffd7a0;
             text-shadow:0 2px 8px rgba(0,0,0,.5),0 0 1px rgba(0,0,0,.35);-webkit-text-stroke:.55px rgba(0,0,0,.35)
         }
-        .section-cover.is-dust2 .cover-title{background:linear-gradient(90deg,#fff5e1 0%,#ffd396 44%,#e6933a 100%)}
+        @supports ((-webkit-background-clip:text) or (background-clip:text)){
+            .cover-title{
+                background-image:var(--map-title-grad);background-size:100% 100%;background-repeat:no-repeat;
+                -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+            }
+        }
+        .section-cover.is-dust2 .cover-title{--map-title-grad:linear-gradient(90deg,#fff5e1 0%,#ffd396 44%,#e6933a 100%)}
         .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
         .grid{
             display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;
