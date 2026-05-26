@@ -94,6 +94,14 @@
         .fx-spark.fav{background:radial-gradient(circle,#fff 0%,#d8c9ff 45%,#8f72ff 100%);box-shadow:0 0 12px rgba(148,108,255,.55)}
         .fx-spark.like{background:radial-gradient(circle,#fff 0%,#ffc0ca 45%,#ff6b88 100%);box-shadow:0 0 12px rgba(255,108,136,.48)}
         .fx-spark.go{animation:sparkTrail .72s cubic-bezier(.2,.72,.2,1) forwards}
+        .combo-float{
+            position:fixed;z-index:10000;pointer-events:none;padding:6px 10px;border-radius:10px;
+            color:#fff;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+            box-shadow:0 10px 20px rgba(0,0,0,.25);transform:translate(-50%,-50%) scale(.8);opacity:0;
+        }
+        .combo-float.like{background:linear-gradient(120deg,#ff4d73,#ff9b2f)}
+        .combo-float.fav{background:linear-gradient(120deg,#4f5dff,#a66dff)}
+        .combo-float.go{animation:comboPop .9s cubic-bezier(.2,.78,.2,1) forwards}
         @keyframes likeBurst{
             0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
             18%{opacity:1;transform:translate(-50%,-62%) scale(1.2)}
@@ -110,6 +118,11 @@
             0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
             20%{opacity:1}
             100%{opacity:0;transform:translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -70px))) scale(1.05)}
+        }
+        @keyframes comboPop{
+            0%{opacity:0;transform:translate(-50%,-50%) scale(.75)}
+            20%{opacity:1;transform:translate(-50%,-66%) scale(1.08)}
+            100%{opacity:0;transform:translate(-50%,-145%) scale(.96)}
         }
     </style>
 </head>
@@ -145,9 +158,14 @@
     const LS_LIKED = "csgo-liked";
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
+    const COMBO_WINDOW_MS = 1400;
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
+    const comboState = {
+        like: { count: 0, lastAt: 0, timer: null },
+        fav: { count: 0, lastAt: 0, timer: null }
+    };
     let favOnly = false;
 
     const elApp = document.getElementById("app");
@@ -418,6 +436,47 @@
         btn.classList.add(cls);
     }
 
+    function showComboFeedback(action, count, anchorEl){
+        const rect = anchorEl ? anchorEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+        const x = rect.left + (rect.width / 2);
+        const y = rect.top - 4;
+
+        const combo = document.createElement("div");
+        combo.className = `combo-float ${action}`;
+        combo.textContent = `${action.toUpperCase()} COMBO x${count}`;
+        combo.style.left = `${x}px`;
+        combo.style.top = `${y}px`;
+        document.body.appendChild(combo);
+        requestAnimationFrame(()=>combo.classList.add("go"));
+        setTimeout(()=>combo.remove(), 920);
+    }
+
+    function updateCombo(action, isAdd, anchorEl){
+        const state = comboState[action];
+        if (!state) return;
+
+        if (!isAdd) {
+            state.count = 0;
+            state.lastAt = 0;
+            if (state.timer) clearTimeout(state.timer);
+            state.timer = null;
+            return;
+        }
+
+        const now = Date.now();
+        state.count = (now - state.lastAt <= COMBO_WINDOW_MS) ? state.count + 1 : 1;
+        state.lastAt = now;
+
+        if (state.count >= 2) showComboFeedback(action, state.count, anchorEl);
+
+        if (state.timer) clearTimeout(state.timer);
+        state.timer = setTimeout(()=>{
+            state.count = 0;
+            state.lastAt = 0;
+            state.timer = null;
+        }, COMBO_WINDOW_MS);
+    }
+
     function bindEvents(){
         elSearch.addEventListener("input", render);
         elSort.addEventListener("change", render);
@@ -459,6 +518,7 @@
                 liked.has(id) ? liked.delete(id) : liked.add(id);
                 showActionFeedback("like", isAdd, btn);
                 animateActionButton(btn, "like");
+                updateCombo("like", isAdd, btn);
                 save();
                 setTimeout(render, 180);
             } else if (action === "fav"){
@@ -466,6 +526,7 @@
                 favs.has(id) ? favs.delete(id) : favs.add(id);
                 showActionFeedback("fav", isAdd, btn);
                 animateActionButton(btn, "fav");
+                updateCombo("fav", isAdd, btn);
                 save();
                 setTimeout(render, 180);
             } else if (action === "share"){
