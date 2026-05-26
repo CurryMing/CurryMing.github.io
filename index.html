@@ -13,6 +13,8 @@
             --cover-overlay:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2));
             --active-text:#d7f8ff; --highlight-shadow:rgba(0,212,255,.2);
             --hero-title:#ffffff;
+            --fav-btn-bg:#18202d; --fav-btn-border:#2f4b66; --fav-btn-text:#d8eeff;
+            --fav-btn-active-bg:#00d4ff; --fav-btn-active-border:#00d4ff; --fav-btn-active-text:#07131e;
         }
         :root[data-theme="light"]{
             --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
@@ -21,6 +23,8 @@
             --cover-overlay:linear-gradient(to right,rgba(255,255,255,.20),rgba(255,255,255,.02));
             --active-text:#0e5fb2; --highlight-shadow:rgba(30,141,255,.22);
             --hero-title:#000000;
+            --fav-btn-bg:#e8f1ff; --fav-btn-border:#9ebae1; --fav-btn-text:#12345f;
+            --fav-btn-active-bg:#1e8dff; --fav-btn-active-border:#1e8dff; --fav-btn-active-text:#ffffff;
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
@@ -81,6 +85,14 @@
         .sort-option.active{background:rgba(0,212,255,.12);color:var(--active-text)}
         .theme-icon-btn{width:38px;padding:0;display:flex;align-items:center;justify-content:center}
         .theme-icon{font-size:16px;line-height:1}
+        #favOnlyBtn{
+            background:var(--fav-btn-bg);border-color:var(--fav-btn-border);color:var(--fav-btn-text);
+            transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .14s ease;
+        }
+        #favOnlyBtn.active{
+            background:var(--fav-btn-active-bg);border-color:var(--fav-btn-active-border);color:var(--fav-btn-active-text);
+        }
+        #favOnlyBtn:hover{transform:translateY(-1px)}
         .section{margin-top:18px}
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
@@ -196,7 +208,7 @@
                 <button class="sort-option" type="button" data-sort-value="hot" role="option" aria-selected="false">按热度（点赞）</button>
             </div>
         </div>
-        <button id="favOnlyBtn" class="btn">只看收藏</button>
+        <button id="favOnlyBtn" class="btn" aria-pressed="false">收藏夹</button>
         <button id="themeBtn" class="btn theme-icon-btn" aria-label="切换主题" title="切换主题">
             <span class="theme-icon" aria-hidden="true">🌙</span>
         </button>
@@ -557,8 +569,15 @@
     }
 
     function bindEvents(){
+        function updateFavOnlyBtnState(){
+            elFavOnlyBtn.textContent = "收藏夹";
+            elFavOnlyBtn.classList.toggle("active", favOnly);
+            elFavOnlyBtn.setAttribute("aria-pressed", favOnly ? "true" : "false");
+        }
+
         elSearch.addEventListener("input", render);
         syncSortUi();
+        updateFavOnlyBtnState();
 
         elSortTrigger.addEventListener("click", ()=>{
             const isOpen = elSortSelect.classList.toggle("open");
@@ -585,7 +604,7 @@
 
         elFavOnlyBtn.addEventListener("click", ()=>{
             favOnly = !favOnly;
-            elFavOnlyBtn.textContent = favOnly ? "显示全部" : "只看收藏";
+            updateFavOnlyBtnState();
             render();
         });
 
