@@ -1,86 +1,16 @@
 {
   "reports": [
     {
-      "date": "2026-05-24",
-      "matches": [
-        {
-          "myRounds": 13,
-          "enemyRounds": 9,
-          "result": "胜利",
-          "players": [
-            { "name": "我", "k": 26, "d": 14, "a": 9, "rating": 1.46 },
-            { "name": "阿明", "k": 20, "d": 17, "a": 6, "rating": 1.10 },
-            { "name": "小白", "k": 17, "d": 15, "a": 10, "rating": 1.03 }
-          ]
-        },
-        {
-          "myRounds": 10,
-          "enemyRounds": 13,
-          "result": "失败",
-          "players": [
-            { "name": "我", "k": 21, "d": 19, "a": 8, "rating": 1.04 },
-            { "name": "阿明", "k": 15, "d": 20, "a": 7, "rating": 0.88 },
-            { "name": "小白", "k": 13, "d": 18, "a": 11, "rating": 0.86 }
-          ]
-        }
-      ]
-    },
-    {
-      "date": "2026-05-25",
-      "matches": [
-        {
-          "myRounds": 12,
-          "enemyRounds": 12,
-          "result": "平局",
-          "players": [
-            { "name": "我", "k": 24, "d": 16, "a": 7, "rating": 1.28 },
-            { "name": "阿明", "k": 19, "d": 18, "a": 8, "rating": 1.03 },
-            { "name": "小白", "k": 14, "d": 14, "a": 12, "rating": 0.99 }
-          ]
-        },
-        {
-          "myRounds": 7,
-          "enemyRounds": 13,
-          "result": "失败",
-          "players": [
-            { "name": "我", "k": 18, "d": 21, "a": 6, "rating": 0.92 },
-            { "name": "阿明", "k": 14, "d": 19, "a": 9, "rating": 0.84 },
-            { "name": "小白", "k": 12, "d": 20, "a": 8, "rating": 0.79 }
-          ]
-        }
-      ]
-    },
-    {
       "date": "2026-05-26",
       "matches": [
-        {
-          "myRounds": 13,
-          "enemyRounds": 8,
-          "result": "胜利",
-          "players": [
-            { "name": "我", "k": 28, "d": 12, "a": 7, "rating": 1.61 },
-            { "name": "阿明", "k": 22, "d": 13, "a": 9, "rating": 1.29 },
-            { "name": "小白", "k": 16, "d": 14, "a": 11, "rating": 1.05 }
-          ]
-        },
-        {
-          "myRounds": 12,
-          "enemyRounds": 12,
-          "result": "平局",
-          "players": [
-            { "name": "我", "k": 20, "d": 17, "a": 10, "rating": 1.14 },
-            { "name": "阿明", "k": 18, "d": 18, "a": 9, "rating": 1.00 },
-            { "name": "小白", "k": 13, "d": 15, "a": 13, "rating": 0.98 }
-          ]
-        },
         {
           "myRounds": 9,
           "enemyRounds": 13,
           "result": "失败",
           "players": [
-            { "name": "我", "k": 17, "d": 20, "a": 8, "rating": 0.91 },
-            { "name": "阿明", "k": 15, "d": 19, "a": 6, "rating": 0.86 },
-            { "name": "小白", "k": 11, "d": 18, "a": 9, "rating": 0.77 }
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.61 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.46 },
+            { "name": "小勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 0.79 }
           ]
         }
       ]
