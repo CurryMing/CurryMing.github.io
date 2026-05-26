@@ -15,7 +15,6 @@
             --hero-title:#ffffff;
             --fav-btn-active-bg:#00d4ff; --fav-btn-active-border:#00d4ff; --fav-btn-active-text:#07131e;
             --map-topline:linear-gradient(90deg,#ffcc7a 0%,#ff9a3d 45%,#d06a1f 100%);
-            --map-title-grad:linear-gradient(90deg,#fffdf4 0%,#ffe9c9 45%,#ffd39a 100%);
         }
         :root[data-theme="light"]{
             --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
@@ -26,7 +25,6 @@
             --hero-title:#000000;
             --fav-btn-active-bg:#1e8dff; --fav-btn-active-border:#1e8dff; --fav-btn-active-text:#ffffff;
             --map-topline:linear-gradient(90deg,#ffcf88 0%,#f5a247 45%,#cc7624 100%);
-            --map-title-grad:linear-gradient(90deg,#ffffff 0%,#ffedd3 48%,#ffc98b 100%);
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
@@ -108,6 +106,7 @@
         .cover-title{
             position:absolute;left:14px;bottom:10px;z-index:1;font-size:clamp(28px,4.2vw,38px);font-weight:800;
             letter-spacing:.5px;color:#fff;
+            background:none !important;-webkit-background-clip:initial;background-clip:initial;-webkit-text-fill-color:currentColor;
             text-shadow:0 2px 8px rgba(0,0,0,.42);-webkit-text-stroke:.35px rgba(0,0,0,.28)
         }
         .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
@@ -442,7 +441,7 @@
             const collapsed = collapsedMaps.has(mapKey);
             const cover = coverForMap(map, items);
             const displayName = mapNameForDisplay(map);
-            const coverClass = mapKey === "dust2" ? "section-cover clickable is-dust2" : "section-cover clickable";
+            const coverClass = "section-cover clickable";
             return `
           <section class="section">
             <div class="${coverClass}" data-action="toggle-map" data-map-key="${mapKey}">
