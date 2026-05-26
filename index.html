@@ -92,6 +92,17 @@
             background:var(--fav-btn-active-bg);border-color:var(--fav-btn-active-border);color:var(--fav-btn-active-text);
         }
         #favOnlyBtn:hover{transform:translateY(-1px)}
+        .report-section{margin-top:10px;border:1px solid var(--border);border-radius:12px;background:var(--card);padding:12px}
+        .report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+        .report-title{margin:0;font-size:18px}
+        .report-sub{margin:5px 0 0;color:var(--muted);font-size:12px}
+        .report-date{height:34px;min-width:170px}
+        .report-table-wrap{margin-top:10px;overflow:auto}
+        .report-table{width:100%;border-collapse:collapse;font-size:14px}
+        .report-table th,.report-table td{padding:10px 8px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+        .report-table th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.3px}
+        .report-table tr:last-child td{border-bottom:none}
+        .report-empty{padding:14px 6px;color:var(--muted);font-size:13px}
         .section{margin-top:18px}
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px;
@@ -217,6 +228,17 @@
         </button>
     </div>
 
+    <section class="report-section">
+        <div class="report-head">
+            <div>
+                <h2 class="report-title">CSGO 战绩日报</h2>
+                <p class="report-sub">选择日期后展示当日开黑战绩（姓名、K/D/A、Rating）。</p>
+            </div>
+            <input id="reportDate" class="input report-date" type="date" aria-label="选择战绩日期" />
+        </div>
+        <div id="reportTableWrap" class="report-table-wrap"></div>
+    </section>
+
     <div id="app"></div>
     <div class="footer"></div>
 </div>
@@ -231,6 +253,33 @@
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
     const COMBO_WINDOW_MS = 1400;
+    const DAILY_MATCH_REPORTS = [
+        {
+            date: "2026-05-24",
+            players: [
+                { name: "我", k: 23, d: 17, a: 8, rating: 1.34 },
+                { name: "阿明", k: 18, d: 19, a: 7, rating: 1.02 },
+                { name: "小白", k: 15, d: 16, a: 11, rating: 0.98 }
+            ]
+        },
+        {
+            date: "2026-05-25",
+            players: [
+                { name: "我", k: 27, d: 14, a: 6, rating: 1.48 },
+                { name: "阿明", k: 21, d: 18, a: 5, rating: 1.12 },
+                { name: "小白", k: 16, d: 20, a: 9, rating: 0.94 }
+            ]
+        },
+        {
+            date: "2026-05-26",
+            players: [
+                { name: "我", k: 19, d: 13, a: 10, rating: 1.29 },
+                { name: "阿明", k: 17, d: 15, a: 8, rating: 1.08 },
+                { name: "小白", k: 14, d: 16, a: 12, rating: 1.01 }
+            ]
+        }
+    ];
+    const reportByDate = new Map(DAILY_MATCH_REPORTS.map(item => [item.date, item.players]));
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
@@ -249,6 +298,8 @@
     const elSortMenu = document.getElementById("sortMenu");
     const elFavOnlyBtn = document.getElementById("favOnlyBtn");
     const elThemeBtn = document.getElementById("themeBtn");
+    const elReportDate = document.getElementById("reportDate");
+    const elReportTableWrap = document.getElementById("reportTableWrap");
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -572,6 +623,45 @@
         elSortTrigger.setAttribute("aria-expanded", "false");
     }
 
+    function renderDailyReport(){
+        if (!elReportDate || !elReportTableWrap) return;
+        const players = reportByDate.get(elReportDate.value) || [];
+        if (!players.length) {
+            elReportTableWrap.innerHTML = `<div class="report-empty">该日期暂无战绩数据。</div>`;
+            return;
+        }
+
+        elReportTableWrap.innerHTML = `
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>K/D/A</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${players.map(p => `
+                        <tr>
+                            <td>${p.name}</td>
+                            <td>${p.k}/${p.d}/${p.a}</td>
+                            <td>${Number(p.rating).toFixed(2)}</td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        `;
+    }
+
+    function initDailyReport(){
+        if (!elReportDate) return;
+        const dates = DAILY_MATCH_REPORTS.map(item => item.date).sort();
+        const today = new Date().toISOString().slice(0, 10);
+        elReportDate.value = reportByDate.has(today) ? today : (dates[dates.length - 1] || "");
+        elReportDate.addEventListener("change", renderDailyReport);
+        renderDailyReport();
+    }
+
     function bindEvents(){
         function updateFavOnlyBtnState(){
             elFavOnlyBtn.textContent = "收藏夹";
@@ -675,6 +765,7 @@
     async function init(){
         initTheme();
         bindEvents();
+        initDailyReport();
         await loadVideosFromManifest();
         render();
         setTimeout(locateFromQuery, 100);
