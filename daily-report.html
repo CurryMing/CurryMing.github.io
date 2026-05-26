@@ -29,9 +29,6 @@
         .btn{cursor:pointer}
         .btn:hover{border-color:var(--accent2)}
         .toolbar{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
-        .date-picker-btn{min-width:180px;display:inline-flex;align-items:center;justify-content:space-between}
-        .date-picker-btn::after{content:"📅";font-size:14px;opacity:.85}
-        .date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
         .table-wrap{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:auto}
         .report-list{display:flex;flex-direction:column;gap:12px;padding:12px}
         .report-match{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
@@ -67,10 +64,7 @@
     </div>
 
     <div class="toolbar">
-        <button id="reportDateBtn" class="btn date-picker-btn" type="button" aria-label="选择战绩日期">
-            <span id="reportDateText">选择日期</span>
-        </button>
-        <input id="reportDate" class="date-input-hidden" type="date" aria-hidden="true" tabindex="-1" />
+        <input id="reportDate" class="input" type="date" aria-label="选择战绩日期" />
         <button id="backBtn" class="btn" type="button">返回高光页</button>
     </div>
 
@@ -151,25 +145,8 @@
     let reportByDate = new Map();
 
     const elDate = document.getElementById("reportDate");
-    const elDateBtn = document.getElementById("reportDateBtn");
-    const elDateText = document.getElementById("reportDateText");
     const elWrap = document.getElementById("tableWrap");
     const elBackBtn = document.getElementById("backBtn");
-
-    function syncDateButtonText(){
-        if (!elDateText) return;
-        elDateText.textContent = elDate && elDate.value ? elDate.value : "选择日期";
-    }
-
-    function openDatePicker(){
-        if (!elDate) return;
-        if (typeof elDate.showPicker === "function") {
-            elDate.showPicker();
-        } else {
-            elDate.focus();
-            elDate.click();
-        }
-    }
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -295,19 +272,13 @@
         const dates = reports.map(item => item.date).sort();
         const today = new Date().toISOString().slice(0, 10);
         elDate.value = reportByDate.has(today) ? today : (dates[dates.length - 1] || "");
-        syncDateButtonText();
-        elDate.addEventListener("change", ()=>{
-            syncDateButtonText();
-            renderReport();
-        });
+        elDate.addEventListener("change", renderReport);
         renderReport();
     }
 
     elBackBtn.addEventListener("click", ()=>{
         location.href = "index.html";
     });
-
-    elDateBtn.addEventListener("click", openDatePicker);
 
     async function init(){
         initTheme();
