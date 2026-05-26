@@ -30,6 +30,8 @@
         }
         .input{min-width:260px;flex:1}.btn{cursor:pointer}
         .btn:hover{border-color:var(--accent2)}
+        .theme-icon-btn{width:38px;padding:0;display:flex;align-items:center;justify-content:center}
+        .theme-icon{font-size:16px;line-height:1}
         .section{margin-top:18px}
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
@@ -72,7 +74,9 @@
             <option value="hot">按热度（点赞）</option>
         </select>
         <button id="favOnlyBtn" class="btn">只看收藏</button>
-        <button id="themeBtn" class="btn">切换为白天</button>
+        <button id="themeBtn" class="btn theme-icon-btn" aria-label="切换主题" title="切换主题">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
     </div>
 
     <div id="app"></div>
@@ -102,7 +106,11 @@
         const nextTheme = theme === "light" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", nextTheme);
         if (elThemeBtn) {
-            elThemeBtn.textContent = nextTheme === "dark" ? "切换为白天" : "切换为黑夜";
+            const iconEl = elThemeBtn.querySelector(".theme-icon");
+            const toLight = nextTheme === "dark";
+            if (iconEl) iconEl.textContent = toLight ? "☀️" : "🌙";
+            elThemeBtn.setAttribute("aria-label", toLight ? "切换为白天模式" : "切换为黑夜模式");
+            elThemeBtn.title = toLight ? "切换为白天模式" : "切换为黑夜模式";
         }
     }
 
