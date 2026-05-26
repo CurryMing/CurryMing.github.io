@@ -13,7 +13,6 @@
             --cover-overlay:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2));
             --active-text:#d7f8ff; --highlight-shadow:rgba(0,212,255,.2);
             --hero-title:#ffffff;
-            --fav-btn-bg:#18202d; --fav-btn-border:#2f4b66; --fav-btn-text:#d8eeff;
             --fav-btn-active-bg:#00d4ff; --fav-btn-active-border:#00d4ff; --fav-btn-active-text:#07131e;
         }
         :root[data-theme="light"]{
@@ -23,7 +22,6 @@
             --cover-overlay:linear-gradient(to right,rgba(255,255,255,.20),rgba(255,255,255,.02));
             --active-text:#0e5fb2; --highlight-shadow:rgba(30,141,255,.22);
             --hero-title:#000000;
-            --fav-btn-bg:#e8f1ff; --fav-btn-border:#9ebae1; --fav-btn-text:#12345f;
             --fav-btn-active-bg:#1e8dff; --fav-btn-active-border:#1e8dff; --fav-btn-active-text:#ffffff;
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
@@ -86,7 +84,6 @@
         .theme-icon-btn{width:38px;padding:0;display:flex;align-items:center;justify-content:center}
         .theme-icon{font-size:16px;line-height:1}
         #favOnlyBtn{
-            background:var(--fav-btn-bg);border-color:var(--fav-btn-border);color:var(--fav-btn-text);
             transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .14s ease;
         }
         #favOnlyBtn.active{
