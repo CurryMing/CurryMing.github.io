@@ -57,14 +57,25 @@
     },
     {
       "id": "local-006",
-      "title": "Do迪手枪局四杀 提高队伍士气",
+      "title": "Do迪再次剑圣附身",
       "map": "dust2",
       "date": "2026-04-28",
-      "tags": ["沙二", "四杀", "USP"],
+      "tags": ["沙二", "剑圣"],
       "type": "local",
       "src": "highlight4.mp4",
       "poster": "highlight4.png",
       "baseLikes": 288
+    },
+    {
+      "id": "local-007",
+      "title": "Do迪手枪局四杀 提高队伍士气",
+      "map": "dust2",
+      "date": "2026-05-25",
+      "tags": ["沙二", "四杀", "USP"],
+      "type": "local",
+      "src": "highlight5.mp4",
+      "poster": "highlight5.png",
+      "baseLikes": 361
     }
   ]
 }
