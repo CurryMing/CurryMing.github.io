@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSGO 高光集锦</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <style>
         :root{
             --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
@@ -52,8 +53,8 @@
         }
         .section-cover-spacer{height:0}
         .section.map-pinned .section-cover{
-            position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:1200;
-            width:min(1200px,92vw);box-shadow:0 10px 28px rgba(0,0,0,.28)
+            position:fixed;top:var(--pin-cover-top, 8px);left:var(--pin-cover-left, 0px);transform:none;z-index:1200;
+            width:var(--pin-cover-w, min(1200px,92vw));box-shadow:0 10px 28px rgba(0,0,0,.28)
         }
         .section.map-pinned .section-cover-spacer{height:var(--pin-cover-h, 0px)}
         .section-cover.clickable{cursor:pointer;user-select:none}
@@ -411,12 +412,30 @@
         setupCardObserver();
     }
 
+    function setPinnedSectionGeometry(sectionEl, coverEl){
+        const coverRect = coverEl.getBoundingClientRect();
+        const marginBottom = parseFloat(getComputedStyle(coverEl).marginBottom || "0") || 0;
+        sectionEl.style.setProperty("--pin-cover-h", `${coverEl.offsetHeight + marginBottom}px`);
+        sectionEl.style.setProperty("--pin-cover-top", `${coverRect.top}px`);
+        sectionEl.style.setProperty("--pin-cover-left", `${coverRect.left}px`);
+        sectionEl.style.setProperty("--pin-cover-w", `${coverRect.width}px`);
+    }
+
     function applyPinnedMap(nextMapKey){
-        if (pinnedMapKey === nextMapKey) return;
+        if (pinnedMapKey === nextMapKey) {
+            if (!nextMapKey) return;
+            const currentSection = [...document.querySelectorAll(".section")].find(section => section.dataset.mapKey === nextMapKey);
+            const currentCover = currentSection ? currentSection.querySelector(".section-cover") : null;
+            if (currentSection && currentCover) setPinnedSectionGeometry(currentSection, currentCover);
+            return;
+        }
 
         document.querySelectorAll(".section.map-pinned").forEach(section => {
             section.classList.remove("map-pinned");
             section.style.removeProperty("--pin-cover-h");
+            section.style.removeProperty("--pin-cover-top");
+            section.style.removeProperty("--pin-cover-left");
+            section.style.removeProperty("--pin-cover-w");
         });
 
         pinnedMapKey = "";
@@ -427,7 +446,7 @@
         const coverEl = targetSection.querySelector(".section-cover");
         if (!coverEl) return;
 
-        targetSection.style.setProperty("--pin-cover-h", `${coverEl.offsetHeight}px`);
+        setPinnedSectionGeometry(targetSection, coverEl);
         targetSection.classList.add("map-pinned");
         pinnedMapKey = nextMapKey;
     }
