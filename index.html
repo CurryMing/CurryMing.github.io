@@ -11,7 +11,6 @@
             --input-bg:#12161d; --media-bg:#0a0d12; --chip-bg:#202734;
             --cover-overlay:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2));
             --active-text:#d7f8ff; --highlight-shadow:rgba(0,212,255,.2);
-            --hero-pop:#ffd84d; --hero-pop-soft:rgba(255,216,77,.25); --hero-ink:#131521;
         }
         :root[data-theme="light"]{
             --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
@@ -19,53 +18,11 @@
             --input-bg:#f7f9fd; --media-bg:#e9eef7; --chip-bg:#edf2fa;
             --cover-overlay:linear-gradient(to right,rgba(255,255,255,.20),rgba(255,255,255,.02));
             --active-text:#0e5fb2; --highlight-shadow:rgba(30,141,255,.22);
-            --hero-pop:#ffd84d; --hero-pop-soft:rgba(255,216,77,.22); --hero-ink:#1a2030;
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
-        .hero{
-            padding:22px;border:2px solid #4a4e77;border-radius:18px;position:relative;overflow:hidden;
-            background:
-                radial-gradient(circle at 22% 26%, rgba(116,235,255,.16), transparent 34%),
-                linear-gradient(135deg,#1f2030 0%,#151522 100%);
-            box-shadow:8px 8px 0 #0b0d16, 0 20px 34px rgba(0,0,0,.35);
-        }
-        .hero::before{
-            content:"";position:absolute;inset:0;pointer-events:none;
-            background:repeating-radial-gradient(circle at 82% 36%, rgba(255,255,255,.09) 0 2px, transparent 2px 10px);
-            opacity:.22;
-        }
-        .hero::after{
-            content:"";position:absolute;right:16px;top:18px;width:280px;height:230px;pointer-events:none;
-            background:var(--hero-pop-soft);
-            clip-path:polygon(45% 0%,58% 20%,84% 10%,74% 35%,100% 48%,74% 60%,85% 90%,58% 78%,45% 100%,32% 78%,6% 90%,18% 60%,0% 48%,18% 35%,6% 10%,32% 20%);
-            border:2px solid rgba(255,216,77,.55);
-        }
-        .hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative;z-index:1}
-        .hero h1{
-            margin:0 0 8px;font-size:clamp(28px,4.2vw,40px);line-height:1.05;font-weight:800;letter-spacing:.4px;
-            text-shadow:2px 2px 0 var(--hero-ink), 5px 5px 0 rgba(0,0,0,.4);
-        }
-        .hero-title-gradient{
-            background:linear-gradient(90deg,#fff7c6 0%,#ffe57e 45%,#ffbf47 100%);
-            -webkit-background-clip:text;background-clip:text;color:transparent;
-        }
-        .hero p{margin:0;color:#d0c49d;font-size:14px;position:relative;z-index:1}
-        .hero-tag{
-            border:2px solid #ffe27e;background:#2f3150;color:#fff3c7;padding:8px 12px;border-radius:12px;
-            font-size:12px;white-space:nowrap;font-weight:700;letter-spacing:.5px;box-shadow:3px 3px 0 #141625
-        }
-        .hero-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1}
-        .hero-stat{
-            border:1px solid #5a5f93;border-radius:999px;padding:5px 10px;font-size:12px;
-            background:rgba(47,49,80,.65);color:#fff2bc
-        }
-        @media (max-width:720px){
-            .hero{padding:18px}
-            .hero-head{flex-direction:column;gap:8px}
-            .hero-tag{font-size:11px;padding:7px 10px}
-            .hero::after{width:180px;height:150px;right:-24px;top:14px}
-        }
+        .hero{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+        .hero h1{margin:0 0 8px}.hero p{margin:0;color:var(--muted)}
         .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
         .input,.btn,.select{
             height:38px;border:1px solid var(--border);border-radius:10px;
@@ -112,16 +69,8 @@
 <body>
 <div class="wrap">
     <div class="hero">
-        <div class="hero-head">
-            <h1><span class="hero-title-gradient">CSGO 高光集锦</span></h1>
-            <div class="hero-tag">HYPE MODE</div>
-        </div>
+        <h1>CSGO 高光集锦</h1>
         <p>支持地图分类封面、点赞/收藏（本地保存）、一键复制分享链接。</p>
-        <div class="hero-stats">
-            <span class="hero-stat">Headshot Moments</span>
-            <span class="hero-stat">Clutch Replays</span>
-            <span class="hero-stat">Map Highlights</span>
-        </div>
     </div>
 
     <div class="toolbar">
