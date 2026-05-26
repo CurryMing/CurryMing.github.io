@@ -12,6 +12,7 @@
             --input-bg:#12161d; --media-bg:#0a0d12; --chip-bg:#202734;
             --cover-overlay:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2));
             --active-text:#d7f8ff; --highlight-shadow:rgba(0,212,255,.2);
+            --hero-title:#ffffff;
         }
         :root[data-theme="light"]{
             --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
@@ -19,6 +20,7 @@
             --input-bg:#f7f9fd; --media-bg:#e9eef7; --chip-bg:#edf2fa;
             --cover-overlay:linear-gradient(to right,rgba(255,255,255,.20),rgba(255,255,255,.02));
             --active-text:#0e5fb2; --highlight-shadow:rgba(30,141,255,.22);
+            --hero-title:#000000;
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
@@ -30,7 +32,7 @@
         .hero-inner{width:min(1200px,92%);margin:0 auto}
         .hero h1{
             margin:0 0 10px;font-size:clamp(30px,5.6vw,54px);line-height:1.05;font-weight:900;letter-spacing:.8px;
-            color:#fff;text-shadow:none;-webkit-text-stroke:.8px rgba(0,0,0,.45)
+            color:var(--hero-title);text-shadow:none;-webkit-text-stroke:0
         }
         .hero p{margin:0;max-width:760px;color:var(--muted);font-size:15px;line-height:1.6}
         @media (max-width:720px){
