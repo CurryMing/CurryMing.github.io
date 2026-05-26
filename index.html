@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,16 @@
         :root{
             --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
             --border:#2a303b; --accent:#ff7a00; --accent2:#00d4ff;
+            --input-bg:#12161d; --media-bg:#0a0d12; --chip-bg:#202734;
+            --cover-overlay:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2));
+            --active-text:#d7f8ff; --highlight-shadow:rgba(0,212,255,.2);
+        }
+        :root[data-theme="light"]{
+            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
+            --border:#d5dfec; --accent:#ff7a00; --accent2:#1e8dff;
+            --input-bg:#f7f9fd; --media-bg:#e9eef7; --chip-bg:#edf2fa;
+            --cover-overlay:linear-gradient(to right,rgba(255,255,255,.20),rgba(255,255,255,.02));
+            --active-text:#0e5fb2; --highlight-shadow:rgba(30,141,255,.22);
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
@@ -16,7 +26,7 @@
         .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
         .input,.btn,.select{
             height:38px;border:1px solid var(--border);border-radius:10px;
-            background:#12161d;color:var(--text);padding:0 12px
+            background:var(--input-bg);color:var(--text);padding:0 12px
         }
         .input{min-width:260px;flex:1}.btn{cursor:pointer}
         .btn:hover{border-color:var(--accent2)}
@@ -27,24 +37,24 @@
         .cover-bg{
             height:110px;background-size:cover;background-position:center;position:relative
         }
-        .cover-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.2))}
+        .cover-bg::after{content:"";position:absolute;inset:0;background:var(--cover-overlay)}
         .cover-title{position:absolute;left:14px;bottom:12px;z-index:1;font-size:20px;font-weight:700}
         .cover-sub{padding:10px 14px;color:var(--muted);font-size:13px}
         .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
         .card{border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:hidden}
-        .media{aspect-ratio:16/9;background:#0a0d12}
+        .media{aspect-ratio:16/9;background:var(--media-bg)}
         video,iframe{width:100%;height:100%;border:0;display:block;object-fit:cover}
         .content{padding:10px 12px 12px}
         .title{margin:0 0 8px;font-size:16px}
         .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
         .ops{display:flex;gap:8px;flex-wrap:wrap}
         .op-btn{
-            border:1px solid var(--border);border-radius:999px;background:#202734;color:var(--text);
+            border:1px solid var(--border);border-radius:999px;background:var(--chip-bg);color:var(--text);
             padding:4px 10px;font-size:12px;cursor:pointer
         }
-        .op-btn.active{border-color:var(--accent2);color:#d7f8ff}
+        .op-btn.active{border-color:var(--accent2);color:var(--active-text)}
         .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
-        .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.2)}
+        .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px var(--highlight-shadow)}
         .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
     </style>
 </head>
@@ -62,6 +72,7 @@
             <option value="hot">按热度（点赞）</option>
         </select>
         <button id="favOnlyBtn" class="btn">只看收藏</button>
+        <button id="themeBtn" class="btn">切换为白天</button>
     </div>
 
     <div id="app"></div>
@@ -76,6 +87,7 @@
 
     const LS_LIKED = "csgo-liked";
     const LS_FAVS = "csgo-favs";
+    const LS_THEME = "csgo-theme";
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     let favOnly = false;
@@ -84,6 +96,26 @@
     const elSearch = document.getElementById("search");
     const elSort = document.getElementById("sort");
     const elFavOnlyBtn = document.getElementById("favOnlyBtn");
+    const elThemeBtn = document.getElementById("themeBtn");
+
+    function applyTheme(theme){
+        const nextTheme = theme === "light" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", nextTheme);
+        if (elThemeBtn) {
+            elThemeBtn.textContent = nextTheme === "dark" ? "切换为白天" : "切换为黑夜";
+        }
+    }
+
+    function initTheme(){
+        const savedTheme = localStorage.getItem(LS_THEME);
+        if (savedTheme === "light" || savedTheme === "dark") {
+            applyTheme(savedTheme);
+            return;
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+        applyTheme(prefersLight ? "light" : "dark");
+    }
 
     function save() {
         localStorage.setItem(LS_LIKED, JSON.stringify([...liked]));
@@ -266,6 +298,13 @@
             render();
         });
 
+        elThemeBtn.addEventListener("click", ()=>{
+            const current = document.documentElement.getAttribute("data-theme") || "dark";
+            const next = current === "dark" ? "light" : "dark";
+            applyTheme(next);
+            localStorage.setItem(LS_THEME, next);
+        });
+
         document.addEventListener("click", (e)=>{
             const btn = e.target.closest("[data-action]");
             if (!btn) return;
@@ -294,6 +333,7 @@
     }
 
     async function init(){
+        initTheme();
         bindEvents();
         await loadVideosFromManifest();
         render();
