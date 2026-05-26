@@ -71,6 +71,46 @@
         .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
         .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px var(--highlight-shadow)}
         .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+        .action-toast{
+            position:fixed;right:16px;top:14px;z-index:9999;padding:10px 14px;border-radius:12px;
+            color:#fff;font-size:13px;font-weight:600;letter-spacing:.2px;opacity:0;transform:translateY(-12px) scale(.98);
+            box-shadow:0 12px 28px rgba(0,0,0,.28);pointer-events:none;transition:opacity .2s ease, transform .26s ease;
+        }
+        .action-toast.show{opacity:1;transform:translateY(0) scale(1)}
+        .action-toast.like{background:linear-gradient(120deg,#ff5a7f,#ff7a00)}
+        .action-toast.fav{background:linear-gradient(120deg,#4a5cff,#9a66ff)}
+        .fx-burst{
+            position:fixed;z-index:9998;pointer-events:none;font-size:24px;font-weight:700;line-height:1;
+            transform:translate(-50%,-50%);
+        }
+        .fx-burst.like{animation:likeBurst .72s cubic-bezier(.2,.75,.2,1) forwards}
+        .fx-burst.fav{animation:favBurst .78s cubic-bezier(.2,.75,.2,1) forwards}
+        .op-btn.like-pop{animation:btnPunch .24s ease}
+        .op-btn.fav-pop{animation:btnWobble .38s cubic-bezier(.2,.75,.2,1)}
+        .fx-spark{
+            position:fixed;z-index:9997;pointer-events:none;width:8px;height:8px;border-radius:50%;
+            transform:translate(-50%,-50%);opacity:0;
+        }
+        .fx-spark.fav{background:radial-gradient(circle,#fff 0%,#d8c9ff 45%,#8f72ff 100%);box-shadow:0 0 12px rgba(148,108,255,.55)}
+        .fx-spark.like{background:radial-gradient(circle,#fff 0%,#ffc0ca 45%,#ff6b88 100%);box-shadow:0 0 12px rgba(255,108,136,.48)}
+        .fx-spark.go{animation:sparkTrail .72s cubic-bezier(.2,.72,.2,1) forwards}
+        @keyframes likeBurst{
+            0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+            18%{opacity:1;transform:translate(-50%,-62%) scale(1.2)}
+            100%{opacity:0;transform:translate(-50%,-165%) scale(.9)}
+        }
+        @keyframes favBurst{
+            0%{opacity:0;transform:translate(-50%,-50%) rotate(-16deg) scale(.55)}
+            20%{opacity:1;transform:translate(-50%,-64%) rotate(10deg) scale(1.25)}
+            100%{opacity:0;transform:translate(-50%,-155%) rotate(32deg) scale(.88)}
+        }
+        @keyframes btnPunch{50%{transform:scale(1.08)}100%{transform:scale(1)}}
+        @keyframes btnWobble{20%{transform:rotate(-7deg) scale(1.05)}45%{transform:rotate(7deg) scale(1.08)}70%{transform:rotate(-3deg)}100%{transform:rotate(0) scale(1)}}
+        @keyframes sparkTrail{
+            0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
+            20%{opacity:1}
+            100%{opacity:0;transform:translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -70px))) scale(1.05)}
+        }
     </style>
 </head>
 <body>
@@ -330,6 +370,54 @@
         }
     }
 
+    function showActionFeedback(action, isAdd, anchorEl){
+        const rect = anchorEl ? anchorEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+        const x = rect.left + (rect.width / 2);
+        const y = rect.top + 10;
+
+        const burst = document.createElement("div");
+        burst.className = `fx-burst ${action}`;
+        burst.textContent = action === "like" ? (isAdd ? "❤" : "♡") : (isAdd ? "★" : "☆");
+        burst.style.left = `${x}px`;
+        burst.style.top = `${y}px`;
+        document.body.appendChild(burst);
+        setTimeout(()=>burst.remove(), 900);
+
+        const sparkOffsets = action === "fav"
+            ? [[-28,-18],[-10,-36],[14,-32],[30,-14]]
+            : [[-20,-12],[0,-30],[20,-12]];
+        sparkOffsets.forEach(([dx, dy])=>{
+            const spark = document.createElement("div");
+            spark.className = `fx-spark ${action}`;
+            spark.style.left = `${x}px`;
+            spark.style.top = `${y}px`;
+            spark.style.setProperty("--dx", `${dx}px`);
+            spark.style.setProperty("--dy", `${dy}px`);
+            document.body.appendChild(spark);
+            requestAnimationFrame(()=>spark.classList.add("go"));
+            setTimeout(()=>spark.remove(), 780);
+        });
+
+        const toast = document.createElement("div");
+        toast.className = `action-toast ${action}`;
+        toast.textContent = action === "like"
+            ? (isAdd ? "已点赞，热度 +1" : "已取消点赞")
+            : (isAdd ? "已加入收藏夹" : "已取消收藏");
+        document.body.appendChild(toast);
+        requestAnimationFrame(()=>toast.classList.add("show"));
+        setTimeout(()=>{
+            toast.classList.remove("show");
+            setTimeout(()=>toast.remove(), 260);
+        }, 950);
+    }
+
+    function animateActionButton(btn, action){
+        const cls = action === "like" ? "like-pop" : "fav-pop";
+        btn.classList.remove(cls);
+        void btn.offsetWidth;
+        btn.classList.add(cls);
+    }
+
     function bindEvents(){
         elSearch.addEventListener("input", render);
         elSort.addEventListener("change", render);
@@ -367,11 +455,19 @@
                     subEl.textContent = `共 ${count} 条高光 · ${nextCollapsed ? "点击展开" : "点击折叠"}`;
                 }
             } else if (action === "like"){
+                const isAdd = !liked.has(id);
                 liked.has(id) ? liked.delete(id) : liked.add(id);
-                save(); render();
+                showActionFeedback("like", isAdd, btn);
+                animateActionButton(btn, "like");
+                save();
+                setTimeout(render, 180);
             } else if (action === "fav"){
+                const isAdd = !favs.has(id);
                 favs.has(id) ? favs.delete(id) : favs.add(id);
-                save(); render();
+                showActionFeedback("fav", isAdd, btn);
+                animateActionButton(btn, "fav");
+                save();
+                setTimeout(render, 180);
             } else if (action === "share"){
                 shareVideo(id);
             }
