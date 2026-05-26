@@ -51,12 +51,6 @@
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px
         }
-        .section-cover-spacer{height:0}
-        .section.map-pinned .section-cover{
-            position:fixed;top:var(--pin-cover-top, 8px);left:var(--pin-cover-left, 0px);transform:none;z-index:1200;
-            width:var(--pin-cover-w, min(1200px,92vw));box-shadow:0 10px 28px rgba(0,0,0,.28)
-        }
-        .section.map-pinned .section-cover-spacer{height:var(--pin-cover-h, 0px)}
         .section-cover.clickable{cursor:pointer;user-select:none}
         .cover-bg{
             height:110px;background-size:cover;background-position:center;position:relative
@@ -185,10 +179,6 @@
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
-    const cardVisibility = new Map();
-    let cardObserver = null;
-    let pinnedMapKey = "";
-    let pinUpdateRaf = 0;
     const comboState = {
         like: { count: 0, lastAt: 0, timer: null },
         fav: { count: 0, lastAt: 0, timer: null }
@@ -357,13 +347,13 @@
         return arr;
     }
 
-    function cardHtml(v, idx, mapKey){
+    function cardHtml(v, idx){
         const media = v.type === "youtube"
             ? `<iframe loading="lazy" src="${v.src}" title="${v.title}" allowfullscreen></iframe>`
             : `<video controls preload="metadata" poster="${v.poster||""}"><source src="${v.src}" type="video/mp4" /></video>`;
 
         return `
-      <article class="card" id="card-${v.id}" data-map-key="${mapKey}" style="--i:${idx};">
+      <article class="card" id="card-${v.id}" style="--i:${idx};">
         <div class="media">${media}</div>
         <div class="content">
           <h3 class="title">${v.title}</h3>
@@ -382,12 +372,8 @@
         const arr = filteredData();
         const groups = groupByMap(arr);
 
-        pinnedMapKey = "";
-        cardVisibility.clear();
-
         if (!arr.length){
             elApp.innerHTML = `<div class="section-cover"><div class="cover-sub">没有匹配结果，换个关键词试试。</div></div>`;
-            if (cardObserver) cardObserver.disconnect();
             return;
         }
 
@@ -397,119 +383,16 @@
             const cover = coverForMap(map, items);
             const displayName = mapNameForDisplay(map);
             return `
-          <section class="section" data-map-key="${mapKey}">
+          <section class="section">
             <div class="section-cover clickable" data-action="toggle-map" data-map-key="${mapKey}">
               <div class="cover-bg" style="background-image:url('${cover || ""}')">
                 <div class="cover-title">${displayName}</div>
               </div>
               <div class="cover-sub" data-count="${items.length}">共 ${items.length} 条高光 · ${collapsed ? "点击展开" : "点击折叠"}</div>
             </div>
-            <div class="section-cover-spacer" aria-hidden="true"></div>
-            <div class="grid ${collapsed ? "collapsed" : ""}">${items.map((v, idx)=>cardHtml(v, idx, mapKey)).join("")}</div>
+            <div class="grid ${collapsed ? "collapsed" : ""}">${items.map((v, idx)=>cardHtml(v, idx)).join("")}</div>
           </section>`;
         }).join("");
-
-        setupCardObserver();
-    }
-
-    function setPinnedSectionGeometry(sectionEl, coverEl){
-        const coverRect = coverEl.getBoundingClientRect();
-        const marginBottom = parseFloat(getComputedStyle(coverEl).marginBottom || "0") || 0;
-        sectionEl.style.setProperty("--pin-cover-h", `${coverEl.offsetHeight + marginBottom}px`);
-        sectionEl.style.setProperty("--pin-cover-top", `${coverRect.top}px`);
-        sectionEl.style.setProperty("--pin-cover-left", `${coverRect.left}px`);
-        sectionEl.style.setProperty("--pin-cover-w", `${coverRect.width}px`);
-    }
-
-    function applyPinnedMap(nextMapKey){
-        if (pinnedMapKey === nextMapKey) {
-            if (!nextMapKey) return;
-            const currentSection = [...document.querySelectorAll(".section")].find(section => section.dataset.mapKey === nextMapKey);
-            const currentCover = currentSection ? currentSection.querySelector(".section-cover") : null;
-            if (currentSection && currentCover) setPinnedSectionGeometry(currentSection, currentCover);
-            return;
-        }
-
-        document.querySelectorAll(".section.map-pinned").forEach(section => {
-            section.classList.remove("map-pinned");
-            section.style.removeProperty("--pin-cover-h");
-            section.style.removeProperty("--pin-cover-top");
-            section.style.removeProperty("--pin-cover-left");
-            section.style.removeProperty("--pin-cover-w");
-        });
-
-        pinnedMapKey = "";
-        if (!nextMapKey) return;
-
-        const targetSection = [...document.querySelectorAll(".section")].find(section => section.dataset.mapKey === nextMapKey);
-        if (!targetSection) return;
-        const coverEl = targetSection.querySelector(".section-cover");
-        if (!coverEl) return;
-
-        setPinnedSectionGeometry(targetSection, coverEl);
-        targetSection.classList.add("map-pinned");
-        pinnedMapKey = nextMapKey;
-    }
-
-    function updatePinnedMapByVisibleCards(){
-        let total = 0;
-        const scoreByMap = new Map();
-
-        cardVisibility.forEach((ratio, cardEl) => {
-            if (!ratio || ratio <= 0) return;
-            const mapKey = cardEl.dataset.mapKey;
-            if (!mapKey) return;
-            const score = Math.min(1, ratio);
-            total += score;
-            scoreByMap.set(mapKey, (scoreByMap.get(mapKey) || 0) + score);
-        });
-
-        if (total < 0.8) {
-            applyPinnedMap("");
-            return;
-        }
-
-        let winnerKey = "";
-        let winnerScore = 0;
-        scoreByMap.forEach((score, mapKey) => {
-            if (score > winnerScore) {
-                winnerScore = score;
-                winnerKey = mapKey;
-            }
-        });
-
-        if (!winnerKey || winnerScore / total < 0.5) {
-            applyPinnedMap("");
-            return;
-        }
-
-        applyPinnedMap(winnerKey);
-    }
-
-    function schedulePinnedMapUpdate(){
-        if (pinUpdateRaf) return;
-        pinUpdateRaf = requestAnimationFrame(() => {
-            pinUpdateRaf = 0;
-            updatePinnedMapByVisibleCards();
-        });
-    }
-
-    function setupCardObserver(){
-        if (cardObserver) cardObserver.disconnect();
-        cardVisibility.clear();
-
-        const thresholds = [];
-        for (let i = 0; i <= 10; i++) thresholds.push(i / 10);
-
-        cardObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                cardVisibility.set(entry.target, entry.intersectionRatio);
-            });
-            schedulePinnedMapUpdate();
-        }, { threshold: thresholds });
-
-        document.querySelectorAll(".card[data-map-key]").forEach(card => cardObserver.observe(card));
-        schedulePinnedMapUpdate();
     }
 
     async function shareVideo(id){
@@ -683,7 +566,6 @@
     async function init(){
         initTheme();
         bindEvents();
-        window.addEventListener("resize", schedulePinnedMapUpdate);
         await loadVideosFromManifest();
         render();
         setTimeout(locateFromQuery, 100);
