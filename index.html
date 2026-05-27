@@ -44,6 +44,49 @@
             .hero h1{letter-spacing:.3px}
             .hero p{font-size:14px;line-height:1.55}
         }
+        .mvp-share-mask{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;z-index:1800;padding:14px}
+        .mvp-share-mask.show{display:flex}
+        .mvp-share-panel{background:var(--card);border-radius:14px;padding:14px;text-align:center;max-width:420px;width:100%}
+        .mvp-share-panel img{width:100%;border-radius:10px;display:block}
+        .mvp-share-panel .btn{margin-top:12px;width:100%}
+        .mvp-card{cursor:pointer}
+        #mvpShareCard{
+            width:360px;padding:0;overflow:hidden;border-radius:16px;
+            font-family:Segoe UI,Microsoft YaHei,sans-serif;
+            background:linear-gradient(145deg,#0f1219,#1a1f2c);
+            border:1px solid rgba(255,215,0,.15);
+            box-shadow:0 0 40px rgba(255,215,0,.06);
+            position:fixed;left:-9999px;top:0;pointer-events:none;
+        }
+        #mvpShareCard .share-top{
+            background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,215,0,.02));
+            padding:28px 28px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);
+        }
+        #mvpShareCard .share-crown{font-size:44px;line-height:1;margin-bottom:4px}
+        #mvpShareCard .share-label{
+            font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.65);
+            font-weight:600;
+        }
+        #mvpShareCard .share-name{
+            font-size:36px;font-weight:900;color:#fff;margin:6px 0 2px;
+            text-shadow:0 2px 12px rgba(0,0,0,.2);
+        }
+        #mvpShareCard .share-body{padding:22px 28px 20px}
+        #mvpShareCard .share-stats{display:flex;gap:12px}
+        #mvpShareCard .share-stat{
+            flex:1;text-align:center;border-radius:12px;
+            background:rgba(255,255,255,.04);padding:12px 8px;
+        }
+        #mvpShareCard .share-stat-val{font-size:20px;font-weight:800;color:#fff}
+        #mvpShareCard .share-stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.3px}
+        #mvpShareCard .share-stat.rating .share-stat-val{color:#78dfb4}
+        #mvpShareCard .share-stat.kills .share-stat-val{color:#ff9aa7}
+        #mvpShareCard .share-stat.matches .share-stat-val{color:#00d4ff}
+        #mvpShareCard .share-week{
+            text-align:center;margin-top:16px;padding-top:14px;
+            border-top:1px solid rgba(255,255,255,.06);
+            font-size:12px;color:rgba(255,255,255,.3);letter-spacing:.5px;
+        }
         .mvp-card{
             border:1px solid var(--border);border-radius:14px;background:var(--card);
             padding:16px 18px;margin:14px 0;display:flex;align-items:center;gap:14px;
@@ -57,6 +100,7 @@
         .mvp-stats{font-size:14px;color:var(--muted);margin:4px 0 2px}
         .mvp-stats strong{color:var(--accent2);font-weight:700}
         .mvp-week{font-size:12px;color:var(--muted);opacity:.7}
+        .mvp-hint{font-size:11px;color:var(--muted);opacity:.4;margin-top:2px}
         .mvp-empty{display:none}
         .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
         .input,.btn,.select{
@@ -237,6 +281,39 @@
             <div class="mvp-name" id="mvpName"></div>
             <div class="mvp-stats" id="mvpStats"></div>
             <div class="mvp-week" id="mvpWeek"></div>
+            <div class="mvp-hint">点击进行分享</div>
+        </div>
+    </div>
+
+    <div id="mvpShareMask" class="mvp-share-mask">
+        <div class="mvp-share-panel">
+            <img id="mvpShareImg" alt="MVP 分享图" />
+            <button id="mvpShareDownloadBtn" class="btn" type="button">下载图片</button>
+        </div>
+    </div>
+
+    <div id="mvpShareCard">
+        <div class="share-top">
+            <div class="share-crown">👑</div>
+            <div class="share-label">WEEKLY MVP</div>
+            <div class="share-name" id="shareMvpName"></div>
+        </div>
+        <div class="share-body">
+            <div class="share-stats">
+                <div class="share-stat rating">
+                    <div class="share-stat-val" id="shareMvpRating"></div>
+                    <div class="share-stat-label">Rating</div>
+                </div>
+                <div class="share-stat kills">
+                    <div class="share-stat-val" id="shareMvpKda"></div>
+                    <div class="share-stat-label">K/D/A</div>
+                </div>
+                <div class="share-stat matches">
+                    <div class="share-stat-val" id="shareMvpMatches"></div>
+                    <div class="share-stat-label">场次</div>
+                </div>
+            </div>
+            <div class="share-week" id="shareMvpWeek"></div>
         </div>
     </div>
 
@@ -287,8 +364,15 @@
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
     const COMBO_WINDOW_MS = 1400;
-    const APP_VERSION = "v1.14.0";
+    const APP_VERSION = "v1.15.0";
     const CHANGELOG = [
+        {
+            version: "v1.15.0",
+            date: "2026-05-27",
+            changes: [
+                "MVP 卡片支持点击生成分享图片，可下载或长按保存"
+            ]
+        },
         {
             version: "v1.14.0",
             date: "2026-05-27",
@@ -509,6 +593,12 @@
         elStats.innerHTML = `Rating <strong>${mvp.avgRating}</strong> · K/D/A ${mvp.avgK}/${mvp.avgD}/${mvp.avgA} · ${mvp.matchCount} 场`;
         elWeek.textContent = `第 ${mvp.weekNumber} 周 · ${mvp.dateRange}`;
         elCard.classList.remove("mvp-empty");
+
+        document.getElementById("shareMvpName").textContent = mvp.name;
+        document.getElementById("shareMvpRating").textContent = mvp.avgRating;
+        document.getElementById("shareMvpKda").textContent = `${mvp.avgK}/${mvp.avgD}/${mvp.avgA}`;
+        document.getElementById("shareMvpMatches").textContent = `${mvp.matchCount} 场`;
+        document.getElementById("shareMvpWeek").textContent = `第 ${mvp.weekNumber} 周 · ${mvp.dateRange}`;
     }
 
     function ytThumb(url){
@@ -957,6 +1047,27 @@
     }
 
     init();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+    document.getElementById("mvpCard").addEventListener("click", async function(){
+        if (!this.classList.contains("mvp-empty") && typeof html2canvas !== "undefined") {
+            const el = document.getElementById("mvpShareCard");
+            const canvas = await html2canvas(el, { backgroundColor: null, scale: 2 });
+            const dataUrl = canvas.toDataURL("image/png");
+            document.getElementById("mvpShareImg").src = dataUrl;
+            document.getElementById("mvpShareDownloadBtn").onclick = () => {
+                const a = document.createElement("a");
+                a.href = dataUrl;
+                a.download = "csgo-mvp.png";
+                a.click();
+            };
+            document.getElementById("mvpShareMask").classList.add("show");
+        }
+    });
+    document.getElementById("mvpShareMask").addEventListener("click", function(e){
+        if (e.target === this) this.classList.remove("show");
+    });
 </script>
 </body>
 </html>
