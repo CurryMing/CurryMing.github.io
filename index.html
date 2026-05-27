@@ -92,6 +92,18 @@
             background:var(--fav-btn-active-bg);border-color:var(--fav-btn-active-border);color:var(--fav-btn-active-text);
         }
         #favOnlyBtn:hover{transform:translateY(-1px)}
+        .changelog-btn{white-space:nowrap}
+        .changelog-mask{position:fixed;inset:0;background:rgba(0,0,0,.46);display:none;align-items:center;justify-content:center;z-index:1600;padding:14px}
+        .changelog-mask.show{display:flex}
+        .changelog-panel{width:min(760px,96vw);max-height:82vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+        .changelog-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+        .changelog-title{margin:0;font-size:18px}
+        .changelog-close{height:32px;padding:0 10px}
+        .changelog-list{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+        .changelog-item{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--input-bg)}
+        .changelog-ver{font-weight:700}
+        .changelog-date{font-size:12px;color:var(--muted);margin-left:8px}
+        .changelog-desc{margin:6px 0 0;padding-left:16px;color:var(--muted);font-size:13px}
         .section{margin-top:18px}
         .section-cover{
             border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:10px;
@@ -134,7 +146,8 @@
         .op-btn.active{border-color:var(--accent2);color:var(--active-text)}
         .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px}
         .highlight{outline:2px solid var(--accent2);box-shadow:0 0 0 4px var(--highlight-shadow)}
-        .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+        .footer{color:var(--muted);font-size:12px;margin-top:20px;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+        .footer-version-btn{height:28px;padding:0 10px;border-radius:999px}
         .action-toast{
             position:fixed;right:16px;top:14px;z-index:9999;padding:10px 14px;border-radius:12px;
             color:#fff;font-size:13px;font-weight:600;letter-spacing:.2px;opacity:0;transform:translateY(-12px) scale(.98);
@@ -219,7 +232,20 @@
     </div>
 
     <div id="app"></div>
-    <div class="footer"></div>
+    <div class="footer">
+        <span id="footerVersion"></span>
+        <button id="changelogBtn" class="btn footer-version-btn" type="button">版本记录</button>
+    </div>
+</div>
+
+<div id="changelogMask" class="changelog-mask" aria-hidden="true">
+    <div class="changelog-panel" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+        <div class="changelog-head">
+            <h2 id="changelogTitle" class="changelog-title">版本更新记录</h2>
+            <button id="changelogCloseBtn" class="btn changelog-close" type="button">关闭</button>
+        </div>
+        <div id="changelogList" class="changelog-list"></div>
+    </div>
 </div>
 
 <script>
@@ -232,6 +258,27 @@
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
     const COMBO_WINDOW_MS = 1400;
+    const APP_VERSION = "v1.11.0";
+    const CHANGELOG = [
+        {
+            version: "v1.11.0",
+            date: "2026-05-27",
+            changes: [
+                "新增版本号机制与版本更新记录弹窗",
+                "主页增加“版本记录”按钮，支持随时查看历史更新",
+                "页脚展示当前版本号与版本说明入口"
+            ]
+        },
+        {
+            version: "v1.10.0",
+            date: "2026-05-27",
+            changes: [
+                "新增战绩列表页、日报页定位跳转与回跳定位",
+                "新增 Rating 走势图（含图例、tooltip、缩放与显示控制）",
+                "日报支持多对局与胜平负视觉区分"
+            ]
+        }
+    ];
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
@@ -250,7 +297,12 @@
     const elSortMenu = document.getElementById("sortMenu");
     const elFavOnlyBtn = document.getElementById("favOnlyBtn");
     const elReportPageBtn = document.getElementById("reportPageBtn");
+    const elChangelogBtn = document.getElementById("changelogBtn");
     const elThemeBtn = document.getElementById("themeBtn");
+    const elFooterVersion = document.getElementById("footerVersion");
+    const elChangelogMask = document.getElementById("changelogMask");
+    const elChangelogList = document.getElementById("changelogList");
+    const elChangelogCloseBtn = document.getElementById("changelogCloseBtn");
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -587,6 +639,33 @@
         elSortTrigger.setAttribute("aria-expanded", "false");
     }
 
+    function renderVersionInfo(){
+        if (!elFooterVersion) return;
+        elFooterVersion.textContent = `当前版本 ${APP_VERSION}`;
+    }
+
+    function renderChangelog(){
+        if (!elChangelogList) return;
+        elChangelogList.innerHTML = CHANGELOG.map(item => `
+            <section class="changelog-item">
+                <div><span class="changelog-ver">${item.version}</span><span class="changelog-date">${item.date}</span></div>
+                <ul class="changelog-desc">${item.changes.map(c => `<li>${c}</li>`).join("")}</ul>
+            </section>
+        `).join("");
+    }
+
+    function openChangelog(){
+        if (!elChangelogMask) return;
+        elChangelogMask.classList.add("show");
+        elChangelogMask.setAttribute("aria-hidden", "false");
+    }
+
+    function closeChangelog(){
+        if (!elChangelogMask) return;
+        elChangelogMask.classList.remove("show");
+        elChangelogMask.setAttribute("aria-hidden", "true");
+    }
+
     function bindEvents(){
         function updateFavOnlyBtnState(){
             elFavOnlyBtn.textContent = "收藏夹";
@@ -619,6 +698,7 @@
 
         document.addEventListener("keydown", (e)=>{
             if (e.key === "Escape") closeSortMenu();
+            if (e.key === "Escape") closeChangelog();
         });
 
         elFavOnlyBtn.addEventListener("click", ()=>{
@@ -629,6 +709,12 @@
 
         elReportPageBtn.addEventListener("click", ()=>{
             location.href = "report-list.html";
+        });
+
+        elChangelogBtn.addEventListener("click", openChangelog);
+        elChangelogCloseBtn.addEventListener("click", closeChangelog);
+        elChangelogMask.addEventListener("click", (e)=>{
+            if (e.target === elChangelogMask) closeChangelog();
         });
 
         elThemeBtn.addEventListener("click", ()=>{
@@ -693,6 +779,8 @@
 
     async function init(){
         initTheme();
+        renderVersionInfo();
+        renderChangelog();
         bindEvents();
         await loadVideosFromManifest();
         render();
