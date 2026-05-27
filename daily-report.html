@@ -63,12 +63,10 @@
             45%{transform:scale(1.012)}
             100%{transform:scale(1)}
         }
-        .multi-badge{
-            display:inline-flex;align-items:center;gap:3px;padding:0 7px;margin-left:6px;
-            border-radius:999px;font-size:11px;font-weight:700;line-height:1.7;
-        }
-        .multi-badge.k4{background:rgba(0,212,255,.15);color:var(--accent2);border:1px solid rgba(0,212,255,.35)}
-        .multi-badge.k5{background:rgba(255,122,0,.15);color:#ff7a00;border:1px solid rgba(255,122,0,.35)}
+        .match-score .multi-badges{display:inline-flex;gap:5px;margin-left:8px;vertical-align:middle}
+        .multi-badge{display:inline-flex;align-items:center;gap:2px;font-size:12px;font-weight:600;margin-left:6px}
+        .multi-badge.k4{color:var(--accent2)}
+        .multi-badge.k5{color:#ff7a00}
         .scroll-top{
             position:fixed;bottom:30px;right:30px;z-index:999;
             width:44px;height:44px;border-radius:50%;border:1px solid var(--border);
@@ -269,13 +267,15 @@
                         if (Number(p.k5) > 0) matchMultikills.push(`<span class="multi-badge k5">🔥${p.name} 5杀</span>`);
                         if (Number(p.k4) > 0) matchMultikills.push(`<span class="multi-badge k4">💥${p.name} 4杀</span>`);
                     });
-                    const matchBadgesHtml = matchMultikills.length ? `<div class="multi-badges" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${matchMultikills.join("")}</div>` : "";
+                    const matchScoreHtml = `<span class="${myScoreClass}">${myRoundsText}</span><span class="match-score-sep">:</span><span class="${enemyScoreClass}">${enemyRoundsText}</span>`;
+                    const matchScoreWithBadges = matchMultikills.length
+                        ? `${matchScoreHtml}<span class="multi-badges">${matchMultikills.join("")}</span>`
+                        : matchScoreHtml;
                     return `
                     <section class="report-match" data-match-index="${idx + 1}">
                         <div class="match-head ${headClass}">
                             <div class="match-summary">
-                                <div class="match-score"><span class="${myScoreClass}">${myRoundsText}</span><span class="match-score-sep">:</span><span class="${enemyScoreClass}">${enemyRoundsText}</span></div>
-                                ${matchBadgesHtml}
+                                <div class="match-score">${matchScoreWithBadges}</div>
                             </div>
                             <div class="match-result ${resultClass}">${match.result}</div>
                         </div>
