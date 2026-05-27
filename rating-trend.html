@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSGO Rating 走势</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <style>
+        :root{
+            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+            --border:#2a303b; --accent2:#00d4ff; --input-bg:#12161d;
+            --grid:#2a3240;
+        }
+        :root[data-theme="light"]{
+            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
+            --border:#d5dfec; --accent2:#1e8dff; --input-bg:#f7f9fd;
+            --grid:#dce4f0;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
+        .wrap{width:min(1100px,94%);margin:0 auto;padding:24px 0 34px}
+        .topbar{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+        h1{margin:0;font-size:30px}
+        .sub{margin:8px 0 0;color:var(--muted);font-size:14px}
+        .btn{height:38px;border:1px solid var(--border);border-radius:10px;background:var(--input-bg);color:var(--text);padding:0 12px;cursor:pointer}
+        .btn:hover{border-color:var(--accent2)}
+        .chart-card{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);padding:12px}
+        .chart-wrap{position:relative;height:470px}
+        #ratingChart{width:100%;height:100%}
+        .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+        .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+        .legend-dot{width:10px;height:10px;border-radius:50%}
+        .hint{margin-top:10px;font-size:12px;color:var(--muted)}
+        .empty{margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--muted)}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div>
+            <h1>Rating 走势</h1>
+            <p class="sub">基于所有对局数据，按时间顺序展示每位玩家 Rating 折线走势。</p>
+        </div>
+        <button id="backBtn" class="btn" type="button">返回战绩列表</button>
+    </div>
+
+    <div id="chartCard" class="chart-card" hidden>
+        <div class="chart-wrap">
+            <canvas id="ratingChart" aria-label="rating 走势图"></canvas>
+        </div>
+        <div id="legend" class="legend"></div>
+        <div class="hint">横轴：按时间顺序的对局编号；纵轴：Rating。</div>
+    </div>
+    <div id="empty" class="empty" hidden>暂无可绘制的战绩数据。</div>
+</div>
+
+<script>
+    const LS_THEME = "csgo-theme";
+    const REPORT_JSON_URL = "assets/reports/daily-report.json";
+    const COLORS = ["#40d3ff", "#ff8bb2", "#7fe4a8", "#ffc773", "#9aa8ff", "#e2a6ff", "#ffd166", "#66c2a5"];
+
+    const elBackBtn = document.getElementById("backBtn");
+    const elChartCard = document.getElementById("chartCard");
+    const elLegend = document.getElementById("legend");
+    const elEmpty = document.getElementById("empty");
+    const canvas = document.getElementById("ratingChart");
+    const ctx = canvas.getContext("2d");
+
+    function applyTheme(theme){
+        const nextTheme = theme === "light" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", nextTheme);
+    }
+
+    function initTheme(){
+        const savedTheme = localStorage.getItem(LS_THEME);
+        if (savedTheme === "light" || savedTheme === "dark") {
+            applyTheme(savedTheme);
+            return;
+        }
+        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+        applyTheme(prefersLight ? "light" : "dark");
+    }
+
+    async function loadReports(){
+        const response = await fetch(REPORT_JSON_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("report json load failed");
+        const raw = await response.json();
+        const reports = Array.isArray(raw && raw.reports) ? raw.reports : [];
+        return reports
+            .map(item => {
+                const date = String((item && item.date) || "").trim();
+                const matches = Array.isArray(item && item.matches) ? item.matches : [];
+                return { date, matches };
+            })
+            .filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item.date))
+            .sort((a,b)=>a.date.localeCompare(b.date));
+    }
+
+    function buildSeries(reports){
+        const timeline = [];
+        const valuesByPlayer = new Map();
+        reports.forEach(day => {
+            day.matches.forEach((match, idx) => {
+                const label = `${day.date}#${idx + 1}`;
+                const players = Array.isArray(match && match.players) ? match.players : [];
+                timeline.push({ label, players });
+            });
+        });
+
+        timeline.forEach((point, pointIndex) => {
+            const ratingsThisPoint = new Map();
+            point.players.forEach(p => {
+                ratingsThisPoint.set(String((p && p.name) || "未知玩家"), Number(p && p.rating) || 0);
+            });
+
+            const allPlayers = new Set([...valuesByPlayer.keys(), ...ratingsThisPoint.keys()]);
+            allPlayers.forEach(name => {
+                if (!valuesByPlayer.has(name)) {
+                    valuesByPlayer.set(name, Array(pointIndex).fill(null));
+                }
+                valuesByPlayer.get(name).push(ratingsThisPoint.has(name) ? ratingsThisPoint.get(name) : null);
+            });
+        });
+
+        return { labels: timeline.map(p => p.label), valuesByPlayer };
+    }
+
+    function drawChart(labels, valuesByPlayer){
+        const ratio = Math.max(1, window.devicePixelRatio || 1);
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.floor(rect.width * ratio);
+        canvas.height = Math.floor(rect.height * ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+        const width = rect.width;
+        const height = rect.height;
+        const padding = { top: 16, right: 18, bottom: 36, left: 40 };
+        const innerW = width - padding.left - padding.right;
+        const innerH = height - padding.top - padding.bottom;
+
+        const allValues = [...valuesByPlayer.values()].flat().filter(v => typeof v === "number");
+        if (!allValues.length || labels.length < 1) return;
+        let minY = Math.min(...allValues);
+        let maxY = Math.max(...allValues);
+        if (minY === maxY) { minY -= 0.2; maxY += 0.2; }
+        minY = Math.floor((minY - 0.05) * 10) / 10;
+        maxY = Math.ceil((maxY + 0.05) * 10) / 10;
+
+        const toX = (i) => labels.length <= 1 ? padding.left + innerW / 2 : padding.left + (i / (labels.length - 1)) * innerW;
+        const toY = (v) => padding.top + (1 - ((v - minY) / (maxY - minY))) * innerH;
+
+        ctx.clearRect(0, 0, width, height);
+        const gridColor = getComputedStyle(document.documentElement).getPropertyValue("--grid").trim() || "#2a3240";
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#9aa4b2";
+
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 1;
+        const gridSteps = 5;
+        for (let s = 0; s <= gridSteps; s++) {
+            const y = padding.top + (s / gridSteps) * innerH;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(padding.left + innerW, y);
+            ctx.stroke();
+
+            const val = (maxY - ((maxY - minY) * s / gridSteps)).toFixed(2);
+            ctx.fillStyle = textColor;
+            ctx.font = "12px Segoe UI";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(val, padding.left - 6, y);
+        }
+
+        const playerNames = [...valuesByPlayer.keys()].sort();
+        playerNames.forEach((name, idx) => {
+            const color = COLORS[idx % COLORS.length];
+            const values = valuesByPlayer.get(name);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let started = false;
+            values.forEach((v, i) => {
+                if (v == null) {
+                    started = false;
+                    return;
+                }
+                const x = toX(i);
+                const y = toY(v);
+                if (!started) {
+                    ctx.moveTo(x, y);
+                    started = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            values.forEach((v, i) => {
+                if (v == null) return;
+                const x = toX(i);
+                const y = toY(v);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        });
+
+        ctx.fillStyle = textColor;
+        ctx.font = "11px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        labels.forEach((_, i) => {
+            if (labels.length > 12 && i % Math.ceil(labels.length / 12) !== 0 && i !== labels.length - 1) return;
+            const x = toX(i);
+            ctx.fillText(String(i + 1), x, padding.top + innerH + 8);
+        });
+    }
+
+    function renderLegend(valuesByPlayer){
+        const names = [...valuesByPlayer.keys()].sort();
+        elLegend.innerHTML = names.map((name, idx) => `
+            <span class="legend-item"><span class="legend-dot" style="background:${COLORS[idx % COLORS.length]}"></span>${name}</span>
+        `).join("");
+    }
+
+    async function init(){
+        initTheme();
+        try {
+            const reports = await loadReports();
+            const { labels, valuesByPlayer } = buildSeries(reports);
+            if (!labels.length || !valuesByPlayer.size) {
+                elChartCard.hidden = true;
+                elEmpty.hidden = false;
+                return;
+            }
+
+            elEmpty.hidden = true;
+            elChartCard.hidden = false;
+            drawChart(labels, valuesByPlayer);
+            renderLegend(valuesByPlayer);
+            window.addEventListener("resize", () => drawChart(labels, valuesByPlayer));
+        } catch (error) {
+            console.warn("加载 rating 走势失败:", error);
+            elChartCard.hidden = true;
+            elEmpty.hidden = false;
+        }
+    }
+
+    elBackBtn.addEventListener("click", ()=>{
+        location.href = "report-list.html";
+    });
+
+    init();
+</script>
+</body>
+</html>
