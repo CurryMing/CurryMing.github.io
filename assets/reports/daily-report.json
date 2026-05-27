@@ -12,6 +12,66 @@
             { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.46 },
             { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 0.79 }
           ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.91 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.00 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 0.99 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 1.61 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 0.46 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 1.79 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.81 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 2.46 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 0.69 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 1.45 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.23 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 1.79 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 1.32 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.54 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 1.59 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.61 },
+            { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.46 },
+            { "name": "勇敢的牛头人", "k": 14, "d": 20, "a": 8, "rating": 0.79 }
+          ]
         }
       ]
     }
