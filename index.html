@@ -44,6 +44,20 @@
             .hero h1{letter-spacing:.3px}
             .hero p{font-size:14px;line-height:1.55}
         }
+        .mvp-card{
+            border:1px solid var(--border);border-radius:14px;background:var(--card);
+            padding:16px 18px;margin:14px 0;display:flex;align-items:center;gap:14px;
+            box-shadow:0 4px 20px rgba(0,0,0,.06);
+            background-image:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,215,0,.01));
+        }
+        .mvp-crown{font-size:34px;line-height:1}
+        .mvp-info{flex:1;min-width:0}
+        .mvp-label{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+        .mvp-name{font-size:24px;font-weight:800;margin:2px 0}
+        .mvp-stats{font-size:14px;color:var(--muted);margin:4px 0 2px}
+        .mvp-stats strong{color:var(--accent2);font-weight:700}
+        .mvp-week{font-size:12px;color:var(--muted);opacity:.7}
+        .mvp-empty{display:none}
         .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
         .input,.btn,.select{
             height:38px;border:1px solid var(--border);border-radius:10px;
@@ -216,6 +230,16 @@
         </div>
     </div>
 
+    <div id="mvpCard" class="mvp-card mvp-empty">
+        <div class="mvp-crown">👑</div>
+        <div class="mvp-info">
+            <div class="mvp-label">本周 MVP</div>
+            <div class="mvp-name" id="mvpName"></div>
+            <div class="mvp-stats" id="mvpStats"></div>
+            <div class="mvp-week" id="mvpWeek"></div>
+        </div>
+    </div>
+
     <div class="toolbar">
         <input id="search" class="input" placeholder="搜索标题 / 地图 / 标签" />
         <div class="sort-select" id="sortSelect">
@@ -230,6 +254,7 @@
         </div>
         <button id="favOnlyBtn" class="btn" aria-pressed="false">收藏夹</button>
         <button id="reportPageBtn" class="btn">战绩日报</button>
+        <button id="leaderboardBtn" class="btn">排行榜</button>
         <button id="themeBtn" class="btn theme-icon-btn" aria-label="切换主题" title="切换主题">
             <span class="theme-icon" aria-hidden="true">🌙</span>
         </button>
@@ -262,8 +287,33 @@
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
     const COMBO_WINDOW_MS = 1400;
-    const APP_VERSION = "v1.11.0";
+    const APP_VERSION = "v1.14.0";
     const CHANGELOG = [
+        {
+            version: "v1.14.0",
+            date: "2026-05-27",
+            changes: [
+                "战绩列表与日报页展示多杀标识：当玩家有 4 杀或 5 杀时显示对应徽章",
+                "日报成员行与对局头部分别展示 4杀/5杀 标签"
+            ]
+        },
+        {
+            version: "v1.13.0",
+            date: "2026-05-27",
+            changes: [
+                "新增排行榜页面（leaderboard.html），展示 MVP 次数、5杀、4杀、总击杀排名",
+                "主页工具栏增加“排行榜”导航按钮",
+                "战绩数据新增 k4/k5 字段，支持多杀统计"
+            ]
+        },
+        {
+            version: "v1.12.0",
+            date: "2026-05-27",
+            changes: [
+                "新增 MVP 评选功能：自动统计每周战绩数据，评选 Rating 最高的玩家为 MVP",
+                "主页增加 MVP 展示卡片，高亮本周最佳选手"
+            ]
+        },
         {
             version: "v1.11.0",
             date: "2026-05-27",
@@ -283,6 +333,7 @@
             ]
         }
     ];
+    const REPORT_JSON_URL = "assets/reports/daily-report.json";
     const liked = new Set(JSON.parse(localStorage.getItem(LS_LIKED) || "[]"));
     const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
     const collapsedMaps = new Set();
@@ -349,6 +400,115 @@
         if (diffDays === 1) return "昨天 " + dateStr;
         if (diffDays === 2) return "前天 " + dateStr;
         return dateStr;
+    }
+
+    function getWeekNumber(dateStr){
+        const d = new Date(dateStr + "T00:00:00");
+        const dayNum = (d.getDay() + 6) % 7;
+        d.setDate(d.getDate() - dayNum + 3);
+        const jan4 = new Date(d.getFullYear(), 0, 4);
+        return 1 + Math.round((d - jan4) / 86400000 / 7);
+    }
+
+    function getWeekMonday(dateStr){
+        const d = new Date(dateStr + "T00:00:00");
+        const day = d.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() + diff);
+        return monday.toISOString().slice(0, 10);
+    }
+
+    function getWeekSunday(dateStr){
+        const d = new Date(dateStr + "T00:00:00");
+        const day = d.getDay();
+        const diff = day === 0 ? 0 : 7 - day;
+        const sunday = new Date(d);
+        sunday.setDate(d.getDate() + diff);
+        return sunday.toISOString().slice(0, 10);
+    }
+
+    async function computeMvp(){
+        try {
+            const response = await fetch(REPORT_JSON_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error("load failed");
+            const raw = await response.json();
+            const list = Array.isArray(raw && raw.reports) ? raw.reports : [];
+            const matches = list
+                .filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item.date))
+                .flatMap(item => (item.matches || []).map(m => ({ ...m, date: item.date })));
+            if (!matches.length) return null;
+
+            const weekGroups = new Map();
+            matches.forEach(m => {
+                const wk = `${getWeekNumber(m.date)}-${new Date(m.date).getFullYear()}`;
+                if (!weekGroups.has(wk)) weekGroups.set(wk, []);
+                weekGroups.get(wk).push(m);
+            });
+
+            const weekKeys = [...weekGroups.keys()].sort();
+            const latestWeek = weekKeys[weekKeys.length - 1];
+            const weekMatches = weekGroups.get(latestWeek);
+
+            const playerStats = new Map();
+            weekMatches.forEach(m => {
+                (m.players || []).forEach(p => {
+                    const name = p.name || "未知";
+                    if (!playerStats.has(name)) playerStats.set(name, { k:0, d:0, a:0, ratingSum:0, count:0 });
+                    const s = playerStats.get(name);
+                    s.k += Number(p.k) || 0;
+                    s.d += Number(p.d) || 0;
+                    s.a += Number(p.a) || 0;
+                    s.ratingSum += Number(p.rating) || 0;
+                    s.count++;
+                });
+            });
+
+            let best = null;
+            let bestAvg = -1;
+            for (const [name, stats] of playerStats) {
+                const avg = stats.ratingSum / stats.count;
+                if (avg > bestAvg) { bestAvg = avg; best = { name, ...stats, avgRating:avg }; }
+            }
+            if (!best) return null;
+
+            const sampleDate = weekMatches[0].date;
+            const monday = getWeekMonday(sampleDate);
+            const sunday = getWeekSunday(sampleDate);
+            const monParts = monday.slice(5).replace("-","/");
+            const sunParts = sunday.slice(5).replace("-","/");
+            const weekNum = latestWeek.split("-")[0];
+
+            return {
+                name: best.name,
+                avgK: (best.k / best.count).toFixed(1),
+                avgD: (best.d / best.count).toFixed(1),
+                avgA: (best.a / best.count).toFixed(1),
+                avgRating: bestAvg.toFixed(2),
+                matchCount: best.count,
+                weekNumber: weekNum,
+                dateRange: `${monParts} - ${sunParts}`
+            };
+        } catch (e) {
+            console.warn("MVP 计算失败:", e);
+            return null;
+        }
+    }
+
+    async function renderMvp(){
+        const elCard = document.getElementById("mvpCard");
+        const elName = document.getElementById("mvpName");
+        const elStats = document.getElementById("mvpStats");
+        const elWeek = document.getElementById("mvpWeek");
+        if (!elCard) return;
+
+        const mvp = await computeMvp();
+        if (!mvp) { elCard.classList.add("mvp-empty"); return; }
+
+        elName.textContent = mvp.name;
+        elStats.innerHTML = `Rating <strong>${mvp.avgRating}</strong> · K/D/A ${mvp.avgK}/${mvp.avgD}/${mvp.avgA} · ${mvp.matchCount} 场`;
+        elWeek.textContent = `第 ${mvp.weekNumber} 周 · ${mvp.dateRange}`;
+        elCard.classList.remove("mvp-empty");
     }
 
     function ytThumb(url){
@@ -715,6 +875,10 @@
             location.href = "report-list.html";
         });
 
+        document.getElementById("leaderboardBtn").addEventListener("click", ()=>{
+            location.href = "leaderboard.html";
+        });
+
         elChangelogBtn.addEventListener("click", openChangelog);
         elChangelogCloseBtn.addEventListener("click", closeChangelog);
         elChangelogMask.addEventListener("click", (e)=>{
@@ -786,6 +950,7 @@
         renderVersionInfo();
         renderChangelog();
         bindEvents();
+        renderMvp();
         await loadVideosFromManifest();
         render();
         setTimeout(locateFromQuery, 100);
