@@ -101,6 +101,13 @@
         drawChart(chartState.labels, chartState.valuesByPlayer);
     }
 
+    function getPlayerColor(name, valuesByPlayer){
+        const source = valuesByPlayer || chartState.valuesByPlayer;
+        const sorted = [...source.keys()].sort();
+        const index = sorted.indexOf(name);
+        return COLORS[(index < 0 ? 0 : index) % COLORS.length];
+    }
+
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", nextTheme);
@@ -223,8 +230,8 @@
         }
 
         const xPositions = visibleIndices.map((globalIndex, localIndex) => ({ globalIndex, x: toX(localIndex) }));
-        activePlayers.forEach((name, idx) => {
-            const color = COLORS[idx % COLORS.length];
+        activePlayers.forEach((name) => {
+            const color = getPlayerColor(name, valuesByPlayer);
             const values = valuesByPlayer.get(name);
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
@@ -280,10 +287,10 @@
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                activePlayers.forEach((name, idx) => {
+                activePlayers.forEach((name) => {
                     const value = valuesByPlayer.get(name)[chartState.hoverIndex];
                     if (value == null) return;
-                    const color = COLORS[idx % COLORS.length];
+                    const color = getPlayerColor(name, valuesByPlayer);
                     const y = toY(value);
                     ctx.beginPath();
                     ctx.arc(hoverX, y, 4.5, 0, Math.PI * 2);
@@ -317,7 +324,7 @@
     function renderLegend(valuesByPlayer){
         const names = [...valuesByPlayer.keys()].sort();
         elLegend.innerHTML = names.map((name, idx) => `
-            <span class="legend-item ${chartState.visiblePlayers.has(name) ? "" : "off"}" data-player="${name}"><span class="legend-dot" style="background:${COLORS[idx % COLORS.length]}"></span>${name}</span>
+            <span class="legend-item ${chartState.visiblePlayers.has(name) ? "" : "off"}" data-player="${name}"><span class="legend-dot" style="background:${getPlayerColor(name, valuesByPlayer)}"></span>${name}</span>
         `).join("");
     }
 
@@ -343,7 +350,7 @@
             .map((name) => {
                 const rating = chartState.valuesByPlayer.get(name)[globalIndex];
                 if (rating == null) return "";
-                const color = COLORS[[...chartState.valuesByPlayer.keys()].sort().indexOf(name) % COLORS.length];
+                const color = getPlayerColor(name, chartState.valuesByPlayer);
                 return `<div class="tooltip-row"><span class="tooltip-name"><span class="tooltip-dot" style="background:${color}"></span>${name}</span><span class="tooltip-val">${Number(rating).toFixed(2)}</span></div>`;
             })
             .join("");
