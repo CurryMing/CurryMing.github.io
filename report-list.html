@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSGO 战绩列表</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <style>
+        :root{
+            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+            --border:#2a303b; --accent2:#00d4ff; --input-bg:#12161d;
+        }
+        :root[data-theme="light"]{
+            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
+            --border:#d5dfec; --accent2:#1e8dff; --input-bg:#f7f9fd;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
+        .wrap{width:min(980px,92%);margin:0 auto;padding:24px 0 34px}
+        .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+        h1{margin:0;font-size:30px}
+        .sub{margin:8px 0 0;color:var(--muted);font-size:14px}
+        .btn{
+            height:38px;border:1px solid var(--border);border-radius:10px;background:var(--input-bg);
+            color:var(--text);padding:0 12px;cursor:pointer
+        }
+        .btn:hover{border-color:var(--accent2)}
+        .list{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+        .item{
+            border:1px solid var(--border);border-radius:12px;background:var(--card);
+            padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;
+            text-decoration:none;color:inherit
+        }
+        .item.result-win{background:rgba(59,207,149,.12);border-color:rgba(59,207,149,.45)}
+        .item.result-lose{background:rgba(255,107,122,.12);border-color:rgba(255,107,122,.45)}
+        .item.result-draw{background:rgba(154,164,178,.1)}
+        .item:hover{border-color:var(--accent2)}
+        .item.located{
+            outline:3px solid var(--accent2);
+            box-shadow:0 0 0 6px rgba(0,212,255,.24), 0 14px 28px rgba(0,0,0,.24);
+            animation:locatedPulse .9s ease 2;
+        }
+        @keyframes locatedPulse{
+            0%{transform:scale(1)}
+            45%{transform:scale(1.012)}
+            100%{transform:scale(1)}
+        }
+        .date{font-size:13px;font-weight:600;color:var(--muted)}
+        .meta{margin-top:4px;font-size:22px;font-weight:800;letter-spacing:.2px}
+        .score-win{color:#3bcf95}
+        .score-lose{color:#ff6b7a}
+        .score-draw{color:#98a3b3}
+        .score-sep{color:var(--muted);padding:0 3px}
+        .result-text.win{color:#3bcf95}
+        .result-text.lose{color:#ff6b7a}
+        .result-text.draw{color:#98a3b3}
+        .arrow{font-size:20px;color:var(--muted)}
+        .empty{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted)}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div>
+            <h1>CSGO 战绩列表</h1>
+            <p class="sub">展示所有历史对局，点击后进入对应日期的日报页。</p>
+        </div>
+        <button id="backBtn" class="btn" type="button">返回高光页</button>
+    </div>
+
+    <div id="list" class="list"></div>
+    <div id="empty" class="empty" hidden>暂无战绩数据。</div>
+</div>
+
+<script>
+    const LS_THEME = "csgo-theme";
+    const REPORT_JSON_URL = "assets/reports/daily-report.json";
+
+    const elList = document.getElementById("list");
+    const elEmpty = document.getElementById("empty");
+    const elBackBtn = document.getElementById("backBtn");
+
+    function locateFromQuery(){
+        const params = new URLSearchParams(location.search);
+        const date = params.get("date");
+        const matchIndex = params.get("m");
+        if (!date || !matchIndex) return;
+        const target = document.querySelector(`.item[data-date="${date}"][data-match-index="${matchIndex}"]`);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.classList.add("located");
+        setTimeout(() => target.classList.remove("located"), 1800);
+    }
+
+    function applyTheme(theme){
+        const nextTheme = theme === "light" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", nextTheme);
+    }
+
+    function initTheme(){
+        const savedTheme = localStorage.getItem(LS_THEME);
+        if (savedTheme === "light" || savedTheme === "dark") {
+            applyTheme(savedTheme);
+            return;
+        }
+        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+        applyTheme(prefersLight ? "light" : "dark");
+    }
+
+    async function loadReportItems(){
+        const response = await fetch(REPORT_JSON_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("report json load failed");
+        const raw = await response.json();
+        const list = Array.isArray(raw && raw.reports) ? raw.reports : [];
+        return list.flatMap((item) => {
+                const date = String((item && item.date) || "").trim();
+                const matches = Array.isArray(item && item.matches) ? item.matches : [];
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return [];
+                return matches.map((match, idx) => {
+                    const myRounds = Number(match && match.myRounds) || 0;
+                    const enemyRounds = Number(match && match.enemyRounds) || 0;
+                    const result = String((match && match.result) || (myRounds > enemyRounds ? "胜利" : (myRounds < enemyRounds ? "失败" : "平局")));
+                    const myWin = myRounds > enemyRounds;
+                    const enemyWin = enemyRounds > myRounds;
+                    return {
+                        date,
+                        matchIndex: idx + 1,
+                        scoreMy: String(myRounds).padStart(2, "0"),
+                        scoreEnemy: String(enemyRounds).padStart(2, "0"),
+                        myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
+                        enemyScoreClass: enemyWin ? "score-win" : (myWin ? "score-lose" : "score-draw"),
+                        result,
+                        sortOrder: idx + 1
+                    };
+                });
+            })
+            .sort((a, b) => {
+                const byDate = b.date.localeCompare(a.date);
+                if (byDate !== 0) return byDate;
+                return a.sortOrder - b.sortOrder;
+            });
+    }
+
+    function renderItems(items){
+        if (!items.length) {
+            elList.innerHTML = "";
+            elEmpty.hidden = false;
+            return;
+        }
+
+        elEmpty.hidden = true;
+        elList.innerHTML = items.map((item) => `
+            <a class="item ${item.result === "胜利" ? "result-win" : (item.result === "失败" ? "result-lose" : "result-draw")}" data-date="${item.date}" data-match-index="${item.matchIndex}" href="daily-report.html?date=${encodeURIComponent(item.date)}&m=${item.matchIndex}">
+                <div>
+                    <div class="date">${item.date}</div>
+                    <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span> · <span class="result-text ${item.result === "胜利" ? "win" : (item.result === "失败" ? "lose" : "draw")}">${item.result}</span></div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+        `).join("");
+    }
+
+    elBackBtn.addEventListener("click", ()=>{
+        location.href = "index.html";
+    });
+
+    async function init(){
+        initTheme();
+        try {
+            const items = await loadReportItems();
+            renderItems(items);
+            locateFromQuery();
+        } catch (error) {
+            console.warn("加载战绩列表失败:", error);
+            renderItems([]);
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
