@@ -18,6 +18,7 @@
         body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
         .wrap{width:min(980px,92%);margin:0 auto;padding:24px 0 34px}
         .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+        .actions{display:flex;gap:8px;flex-wrap:wrap}
         h1{margin:0;font-size:30px}
         .sub{margin:8px 0 0;color:var(--muted);font-size:14px}
         .btn{
@@ -65,7 +66,10 @@
             <h1>CSGO 战绩列表</h1>
             <p class="sub">展示所有历史对局，点击后进入对应日期的日报页。</p>
         </div>
-        <button id="backBtn" class="btn" type="button">返回高光页</button>
+        <div class="actions">
+            <button id="trendBtn" class="btn" type="button">Rating 走势</button>
+            <button id="backBtn" class="btn" type="button">返回高光页</button>
+        </div>
     </div>
 
     <div id="list" class="list"></div>
@@ -78,6 +82,7 @@
 
     const elList = document.getElementById("list");
     const elEmpty = document.getElementById("empty");
+    const elTrendBtn = document.getElementById("trendBtn");
     const elBackBtn = document.getElementById("backBtn");
 
     function locateFromQuery(){
@@ -162,6 +167,10 @@
 
     elBackBtn.addEventListener("click", ()=>{
         location.href = "index.html";
+    });
+
+    elTrendBtn.addEventListener("click", ()=>{
+        location.href = "rating-trend.html";
     });
 
     async function init(){
