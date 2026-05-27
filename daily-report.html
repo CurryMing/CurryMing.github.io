@@ -41,7 +41,6 @@
         .match-head.bg-win{background:var(--score-win-bg)}
         .match-head.bg-lose{background:var(--score-lose-bg)}
         .match-head.bg-draw{background:var(--score-draw-bg)}
-        .match-index{font-size:12px;color:var(--muted)}
         .match-summary{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);padding:12px}
         .match-score{font-size:20px;font-weight:800;letter-spacing:.3px}
         .match-score-sep{color:var(--muted);padding:0 4px}
@@ -56,6 +55,8 @@
         th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
         th{font-size:12px;color:var(--muted);letter-spacing:.3px}
         tr:last-child td{border-bottom:none}
+        .rating-good{color:#78dfb4;font-weight:700}
+        .rating-bad{color:#ff9aa7;font-weight:700}
         .empty{padding:16px 12px;color:var(--muted);font-size:13px}
         @keyframes locatedPulse{
             0%{transform:scale(1)}
@@ -249,7 +250,6 @@
                     <section class="report-match" data-match-index="${idx + 1}">
                         <div class="match-head ${headClass}">
                             <div class="match-summary">
-                                <div class="match-index">对局 ${idx + 1}</div>
                                 <div class="match-score"><span class="${myScoreClass}">${myRoundsText}</span><span class="match-score-sep">:</span><span class="${enemyScoreClass}">${enemyRoundsText}</span></div>
                             </div>
                             <div class="match-result ${resultClass}">${match.result}</div>
@@ -267,7 +267,7 @@
                                     <tr>
                                         <td>${p.name}</td>
                                         <td>${p.k}/${p.d}/${p.a}</td>
-                                        <td>${Number(p.rating).toFixed(2)}</td>
+                                        <td class="${Number(p.rating) >= 1 ? "rating-good" : "rating-bad"}">${Number(p.rating).toFixed(2)}</td>
                                     </tr>
                                 `).join("")}
                             </tbody>
