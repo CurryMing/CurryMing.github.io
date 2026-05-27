@@ -32,6 +32,7 @@
         .table-wrap{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:auto}
         .report-list{display:flex;flex-direction:column;gap:12px;padding:12px}
         .report-match{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+        .report-match.located{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.16)}
         .match-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
         .match-head.bg-win{background:var(--score-win-bg)}
         .match-head.bg-lose{background:var(--score-lose-bg)}
@@ -236,7 +237,7 @@
                     const myRoundsText = String(match.myRounds).padStart(2, "0");
                     const enemyRoundsText = String(match.enemyRounds).padStart(2, "0");
                     return `
-                    <section class="report-match">
+                    <section class="report-match" data-match-index="${idx + 1}">
                         <div class="match-head ${headClass}">
                             <div class="match-summary">
                                 <div class="match-index">对局 ${idx + 1}</div>
@@ -266,18 +267,38 @@
                 }).join("")}
             </div>
         `;
+
+        const matchParam = Number(new URLSearchParams(location.search).get("m"));
+        if (Number.isFinite(matchParam) && matchParam > 0) {
+            const target = elWrap.querySelector(`.report-match[data-match-index="${matchParam}"]`);
+            if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+                target.classList.add("located");
+                setTimeout(() => target.classList.remove("located"), 1800);
+            }
+        }
     }
 
     function initDate(){
         const dates = reports.map(item => item.date).sort();
         const today = new Date().toISOString().slice(0, 10);
-        elDate.value = reportByDate.has(today) ? today : (dates[dates.length - 1] || "");
+        const queryDate = new URLSearchParams(location.search).get("date");
+        if (queryDate && reportByDate.has(queryDate)) {
+            elDate.value = queryDate;
+        } else {
+            elDate.value = reportByDate.has(today) ? today : (dates[dates.length - 1] || "");
+        }
         elDate.addEventListener("change", renderReport);
         renderReport();
     }
 
     elBackBtn.addEventListener("click", ()=>{
-        location.href = "index.html";
+        const matchParam = new URLSearchParams(location.search).get("m");
+        const dateValue = elDate.value;
+        const params = new URLSearchParams();
+        if (dateValue) params.set("date", dateValue);
+        if (matchParam) params.set("m", matchParam);
+        location.href = `report-list.html?${params.toString()}`;
     });
 
     async function init(){
