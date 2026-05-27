@@ -38,8 +38,15 @@
         .tooltip-title{font-weight:700}
         .tooltip-sub{color:var(--muted);margin-top:2px}
         .tooltip-rating{margin-top:4px;font-weight:700}
+        .tooltip-row{display:flex;justify-content:space-between;gap:10px;margin-top:4px}
+        .tooltip-name{display:flex;align-items:center;gap:6px}
+        .tooltip-dot{width:8px;height:8px;border-radius:50%}
+        .tooltip-val{font-weight:700}
         .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
         .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+        .legend-item{cursor:pointer;user-select:none;padding:2px 6px;border-radius:999px;border:1px solid transparent}
+        .legend-item:hover{border-color:var(--border);color:var(--text)}
+        .legend-item.off{opacity:.45;filter:saturate(.5)}
         .legend-dot{width:10px;height:10px;border-radius:50%}
         .hint{margin-top:10px;font-size:12px;color:var(--muted)}
         .empty{margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--muted)}
@@ -61,7 +68,7 @@
             <div id="chartTooltip" class="chart-tooltip" aria-hidden="true"></div>
         </div>
         <div id="legend" class="legend"></div>
-        <div class="hint">横轴：按时间顺序的对局编号；纵轴：Rating。</div>
+        <div class="hint">横轴：按时间顺序的对局编号；纵轴：Rating。滚轮缩放横轴，点击图例可隐藏/显示玩家。</div>
     </div>
     <div id="empty" class="empty" hidden>暂无可绘制的战绩数据。</div>
 </div>
@@ -79,7 +86,20 @@
     const canvas = document.getElementById("ratingChart");
     const elChartWrap = canvas.parentElement;
     const ctx = canvas.getContext("2d");
-    const chartState = { points: [] };
+    const chartState = {
+        labels: [],
+        valuesByPlayer: new Map(),
+        hoverIndex: -1,
+        hoverY: 0,
+        xPositions: [],
+        viewStart: 0,
+        viewEnd: 0,
+        visiblePlayers: new Set()
+    };
+
+    function drawFromState(){
+        drawChart(chartState.labels, chartState.valuesByPlayer);
+    }
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -153,15 +173,31 @@
         const innerW = width - padding.left - padding.right;
         const innerH = height - padding.top - padding.bottom;
 
-        const allValues = [...valuesByPlayer.values()].flat().filter(v => typeof v === "number");
-        if (!allValues.length || labels.length < 1) return;
+        if (!labels.length) return;
+        const start = Math.max(0, Math.min(chartState.viewStart, labels.length - 1));
+        const end = Math.max(start, Math.min(chartState.viewEnd, labels.length - 1));
+        const visibleIndices = [];
+        for (let i = start; i <= end; i++) visibleIndices.push(i);
+        if (!visibleIndices.length) return;
+
+        const sortedPlayers = [...valuesByPlayer.keys()].sort();
+        const activePlayers = sortedPlayers.filter(name => chartState.visiblePlayers.has(name));
+        const allValues = activePlayers
+            .flatMap(name => visibleIndices.map(i => valuesByPlayer.get(name)[i]))
+            .filter(v => typeof v === "number");
+        if (!allValues.length) {
+            ctx.clearRect(0, 0, width, height);
+            chartState.xPositions = [];
+            return;
+        }
         let minY = Math.min(...allValues);
         let maxY = Math.max(...allValues);
         if (minY === maxY) { minY -= 0.2; maxY += 0.2; }
         minY = Math.floor((minY - 0.05) * 10) / 10;
         maxY = Math.ceil((maxY + 0.05) * 10) / 10;
 
-        const toX = (i) => labels.length <= 1 ? padding.left + innerW / 2 : padding.left + (i / (labels.length - 1)) * innerW;
+        const visibleCount = visibleIndices.length;
+        const toX = (localIndex) => visibleCount <= 1 ? padding.left + innerW / 2 : padding.left + (localIndex / (visibleCount - 1)) * innerW;
         const toY = (v) => padding.top + (1 - ((v - minY) / (maxY - minY))) * innerH;
 
         ctx.clearRect(0, 0, width, height);
@@ -186,21 +222,21 @@
             ctx.fillText(val, padding.left - 6, y);
         }
 
-        const playerNames = [...valuesByPlayer.keys()].sort();
-        const allPoints = [];
-        playerNames.forEach((name, idx) => {
+        const xPositions = visibleIndices.map((globalIndex, localIndex) => ({ globalIndex, x: toX(localIndex) }));
+        activePlayers.forEach((name, idx) => {
             const color = COLORS[idx % COLORS.length];
             const values = valuesByPlayer.get(name);
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.beginPath();
             let started = false;
-            values.forEach((v, i) => {
+            visibleIndices.forEach((globalIndex, localIndex) => {
+                const v = values[globalIndex];
                 if (v == null) {
                     started = false;
                     return;
                 }
-                const x = toX(i);
+                const x = toX(localIndex);
                 const y = toY(v);
                 if (!started) {
                     ctx.moveTo(x, y);
@@ -212,34 +248,76 @@
             ctx.stroke();
 
             ctx.fillStyle = color;
-            values.forEach((v, i) => {
+            visibleIndices.forEach((globalIndex, localIndex) => {
+                const v = values[globalIndex];
                 if (v == null) return;
-                const x = toX(i);
+                const x = toX(localIndex);
                 const y = toY(v);
-                allPoints.push({ x, y, player: name, rating: Number(v).toFixed(2), label: labels[i], color });
                 ctx.beginPath();
                 ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fill();
             });
         });
 
-        chartState.points = allPoints;
+        if (chartState.hoverIndex >= start && chartState.hoverIndex <= end) {
+            const foundX = xPositions.find(item => item.globalIndex === chartState.hoverIndex);
+            const hoverX = foundX ? foundX.x : null;
+            if (hoverX !== null) {
+
+                ctx.save();
+                ctx.strokeStyle = "rgba(120, 170, 220, .55)";
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                ctx.moveTo(hoverX, padding.top);
+                ctx.lineTo(hoverX, padding.top + innerH);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(padding.left, chartState.hoverY);
+                ctx.lineTo(padding.left + innerW, chartState.hoverY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                activePlayers.forEach((name, idx) => {
+                    const value = valuesByPlayer.get(name)[chartState.hoverIndex];
+                    if (value == null) return;
+                    const color = COLORS[idx % COLORS.length];
+                    const y = toY(value);
+                    ctx.beginPath();
+                    ctx.arc(hoverX, y, 4.5, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "rgba(255,255,255,.9)";
+                    ctx.stroke();
+                });
+            }
+        }
+
+        chartState.labels = labels;
+        chartState.valuesByPlayer = valuesByPlayer;
+        chartState.xPositions = xPositions;
 
         ctx.fillStyle = textColor;
         ctx.font = "11px Segoe UI";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        labels.forEach((_, i) => {
-            if (labels.length > 12 && i % Math.ceil(labels.length / 12) !== 0 && i !== labels.length - 1) return;
-            const x = toX(i);
-            ctx.fillText(String(i + 1), x, padding.top + innerH + 8);
+        const labelStep = visibleCount > 12 ? Math.ceil(visibleCount / 12) : 1;
+        visibleIndices.forEach((globalIndex, localIndex) => {
+            if (visibleCount > 12 && localIndex % labelStep !== 0 && localIndex !== visibleCount - 1) return;
+            const x = toX(localIndex);
+            ctx.fillText(String(globalIndex + 1), x, padding.top + innerH + 8);
         });
+
+        chartState.xPositions = xPositions;
     }
 
     function renderLegend(valuesByPlayer){
         const names = [...valuesByPlayer.keys()].sort();
         elLegend.innerHTML = names.map((name, idx) => `
-            <span class="legend-item"><span class="legend-dot" style="background:${COLORS[idx % COLORS.length]}"></span>${name}</span>
+            <span class="legend-item ${chartState.visiblePlayers.has(name) ? "" : "off"}" data-player="${name}"><span class="legend-dot" style="background:${COLORS[idx % COLORS.length]}"></span>${name}</span>
         `).join("");
     }
 
@@ -256,13 +334,23 @@
         };
     }
 
-    function showTooltip(point, mouseX, mouseY){
+    function showTooltipByIndex(globalIndex, mouseX, mouseY){
         if (!elTooltip || !elChartWrap) return;
-        const parsed = parseLabel(point.label);
+        const label = chartState.labels[globalIndex] || "";
+        const parsed = parseLabel(label);
+        const names = [...chartState.valuesByPlayer.keys()].filter(name => chartState.visiblePlayers.has(name)).sort();
+        const rows = names
+            .map((name) => {
+                const rating = chartState.valuesByPlayer.get(name)[globalIndex];
+                if (rating == null) return "";
+                const color = COLORS[[...chartState.valuesByPlayer.keys()].sort().indexOf(name) % COLORS.length];
+                return `<div class="tooltip-row"><span class="tooltip-name"><span class="tooltip-dot" style="background:${color}"></span>${name}</span><span class="tooltip-val">${Number(rating).toFixed(2)}</span></div>`;
+            })
+            .join("");
         elTooltip.innerHTML = `
-            <div class="tooltip-title" style="color:${point.color}">${point.player}</div>
+            <div class="tooltip-title">对局详情</div>
             <div class="tooltip-sub">${parsed.date} · 对局 ${parsed.matchIndex}</div>
-            <div class="tooltip-rating">Rating: ${point.rating}</div>
+            ${rows || `<div class="tooltip-rating">无数据</div>`}
         `;
 
         const wrapRect = elChartWrap.getBoundingClientRect();
@@ -284,31 +372,94 @@
 
     function bindTooltipEvents(){
         canvas.addEventListener("mousemove", (e) => {
-            if (!chartState.points.length) return hideTooltip();
+            if (!chartState.xPositions.length) return hideTooltip();
             const x = e.offsetX;
             const y = e.offsetY;
+
             let nearest = null;
             let nearestDist = Infinity;
-            chartState.points.forEach((p) => {
-                const dx = p.x - x;
-                const dy = p.y - y;
-                const d2 = dx * dx + dy * dy;
-                if (d2 < nearestDist) {
-                    nearestDist = d2;
-                    nearest = p;
+            chartState.xPositions.forEach((point) => {
+                const d = Math.abs(point.x - x);
+                if (d < nearestDist) {
+                    nearestDist = d;
+                    nearest = point;
                 }
             });
 
-            if (!nearest || nearestDist > 13 * 13) {
+            if (!nearest || nearestDist > 24) {
+                chartState.hoverIndex = -1;
+                drawFromState();
                 hideTooltip();
                 return;
             }
 
-            showTooltip(nearest, e.clientX, e.clientY);
+            chartState.hoverIndex = nearest.globalIndex;
+            chartState.hoverY = y;
+            drawFromState();
+            showTooltipByIndex(nearest.globalIndex, e.clientX, e.clientY);
         });
 
-        canvas.addEventListener("mouseleave", hideTooltip);
+        canvas.addEventListener("mouseleave", () => {
+            chartState.hoverIndex = -1;
+            drawFromState();
+            hideTooltip();
+        });
         window.addEventListener("resize", hideTooltip);
+
+        canvas.addEventListener("wheel", (e) => {
+            if (!chartState.labels.length || !chartState.xPositions.length) return;
+            e.preventDefault();
+            const total = chartState.labels.length;
+            const currentWindow = chartState.viewEnd - chartState.viewStart + 1;
+            const minWindow = Math.min(4, total);
+            const maxWindow = total;
+
+            const zoomIn = e.deltaY < 0;
+            const factor = zoomIn ? 0.84 : 1.2;
+            let nextWindow = Math.round(currentWindow * factor);
+            nextWindow = Math.max(minWindow, Math.min(maxWindow, nextWindow));
+            if (nextWindow === currentWindow) return;
+
+            const x = e.offsetX;
+            let nearest = chartState.xPositions[0];
+            let nearestDist = Infinity;
+            chartState.xPositions.forEach((p) => {
+                const d = Math.abs(p.x - x);
+                if (d < nearestDist) {
+                    nearestDist = d;
+                    nearest = p;
+                }
+            });
+
+            const anchor = nearest.globalIndex;
+            const ratio = currentWindow <= 1 ? 0.5 : (anchor - chartState.viewStart) / (currentWindow - 1);
+            let nextStart = Math.round(anchor - ratio * (nextWindow - 1));
+            nextStart = Math.max(0, Math.min(total - nextWindow, nextStart));
+            chartState.viewStart = nextStart;
+            chartState.viewEnd = nextStart + nextWindow - 1;
+
+            chartState.hoverIndex = -1;
+            hideTooltip();
+            drawFromState();
+        }, { passive: false });
+
+        elLegend.addEventListener("click", (e) => {
+            const item = e.target.closest("[data-player]");
+            if (!item) return;
+            const player = item.dataset.player;
+            if (!player) return;
+            if (chartState.visiblePlayers.has(player)) chartState.visiblePlayers.delete(player);
+            else chartState.visiblePlayers.add(player);
+
+            if (!chartState.visiblePlayers.size) {
+                chartState.visiblePlayers.add(player);
+            }
+
+            renderLegend(chartState.valuesByPlayer);
+            chartState.hoverIndex = -1;
+            hideTooltip();
+            drawFromState();
+        });
     }
 
     async function init(){
@@ -324,9 +475,14 @@
 
             elEmpty.hidden = true;
             elChartCard.hidden = false;
-            drawChart(labels, valuesByPlayer);
+            chartState.labels = labels;
+            chartState.valuesByPlayer = valuesByPlayer;
+            chartState.viewStart = 0;
+            chartState.viewEnd = labels.length - 1;
+            chartState.visiblePlayers = new Set([...valuesByPlayer.keys()]);
+            drawFromState();
             renderLegend(valuesByPlayer);
-            window.addEventListener("resize", () => drawChart(labels, valuesByPlayer));
+            window.addEventListener("resize", drawFromState);
             bindTooltipEvents();
         } catch (error) {
             console.warn("加载 rating 走势失败:", error);
