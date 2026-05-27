@@ -184,7 +184,7 @@
         elList.innerHTML = items.map((item) => {
             const badges = item.multikills && item.multikills.length
                 ? item.multikills.map(mk => {
-                    const label = mk.type === "k5" ? `${mk.name} 5杀` : `${mk.name} ${mk.count}杀`;
+                    const label = mk.type === "k5" ? `${mk.name} 5杀` : `${mk.name} 4杀`;
                     return `<span class="multi-badge ${mk.type}">${mk.type === "k5" ? "🔥" : "💥"}${label}</span>`;
                   }).join("")
                 : "";
