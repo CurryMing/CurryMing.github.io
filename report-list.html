@@ -138,31 +138,33 @@
                 const date = String((item && item.date) || "").trim();
                 const matches = Array.isArray(item && item.matches) ? item.matches : [];
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return [];
-                const players = Array.isArray(match && match.players) ? match.players : [];
-                const multikills = [];
-                players.forEach(p => {
-                    const name = p.name || "";
-                    const k4 = Number(p.k4) || 0;
-                    const k5 = Number(p.k5) || 0;
-                    if (k5 > 0) multikills.push({ name, type: "k5", count: k5 });
-                    if (k4 > 0) multikills.push({ name, type: "k4", count: k4 });
+                return matches.map((match, idx) => {
+                    const players = Array.isArray(match && match.players) ? match.players : [];
+                    const multikills = [];
+                    players.forEach(p => {
+                        const name = p.name || "";
+                        const k4 = Number(p.k4) || 0;
+                        const k5 = Number(p.k5) || 0;
+                        if (k5 > 0) multikills.push({ name, type: "k5", count: k5 });
+                        if (k4 > 0) multikills.push({ name, type: "k4", count: k4 });
+                    });
+                    const myRounds = Number(match && match.myRounds) || 0;
+                    const enemyRounds = Number(match && match.enemyRounds) || 0;
+                    const result = String((match && match.result) || (myRounds > enemyRounds ? "胜利" : (myRounds < enemyRounds ? "失败" : "平局")));
+                    const myWin = myRounds > enemyRounds;
+                    const enemyWin = enemyRounds > myRounds;
+                    return {
+                        date,
+                        matchIndex: idx + 1,
+                        scoreMy: String(myRounds).padStart(2, "0"),
+                        scoreEnemy: String(enemyRounds).padStart(2, "0"),
+                        myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
+                        enemyScoreClass: enemyWin ? "score-win" : (myWin ? "score-lose" : "score-draw"),
+                        result,
+                        multikills,
+                        sortOrder: idx + 1
+                    };
                 });
-                const myRounds = Number(match && match.myRounds) || 0;
-                const enemyRounds = Number(match && match.enemyRounds) || 0;
-                const result = String((match && match.result) || (myRounds > enemyRounds ? "胜利" : (myRounds < enemyRounds ? "失败" : "平局")));
-                const myWin = myRounds > enemyRounds;
-                const enemyWin = enemyRounds > myRounds;
-                return {
-                    date,
-                    matchIndex: idx + 1,
-                    scoreMy: String(myRounds).padStart(2, "0"),
-                    scoreEnemy: String(enemyRounds).padStart(2, "0"),
-                    myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
-                    enemyScoreClass: enemyWin ? "score-win" : (myWin ? "score-lose" : "score-draw"),
-                    result,
-                    multikills,
-                    sortOrder: idx + 1
-                };
             })
             .sort((a, b) => {
                 const byDate = b.date.localeCompare(a.date);
