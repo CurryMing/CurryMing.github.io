@@ -32,7 +32,11 @@
         .table-wrap{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:auto}
         .report-list{display:flex;flex-direction:column;gap:12px;padding:12px}
         .report-match{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
-        .report-match.located{outline:2px solid var(--accent2);box-shadow:0 0 0 4px rgba(0,212,255,.16)}
+        .report-match.located{
+            outline:2px solid var(--accent2);
+            box-shadow:0 0 0 4px rgba(0,212,255,.18), 0 10px 22px rgba(0,0,0,.2);
+            animation:locatedPulse .75s ease 1;
+        }
         .match-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
         .match-head.bg-win{background:var(--score-win-bg)}
         .match-head.bg-lose{background:var(--score-lose-bg)}
@@ -53,6 +57,11 @@
         th{font-size:12px;color:var(--muted);letter-spacing:.3px}
         tr:last-child td{border-bottom:none}
         .empty{padding:16px 12px;color:var(--muted);font-size:13px}
+        @keyframes locatedPulse{
+            0%{transform:scale(1)}
+            45%{transform:scale(1.012)}
+            100%{transform:scale(1)}
+        }
     </style>
 </head>
 <body>
