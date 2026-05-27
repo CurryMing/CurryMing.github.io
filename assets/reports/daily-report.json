@@ -1,6 +1,41 @@
 {
   "reports": [
     {
+      "date": "2026-05-27",
+      "matches": [
+        {
+          "myRounds": 13,
+          "enemyRounds": 6,
+          "result": "",
+          "players": [
+            { "name": "Do迪", "k": 18, "d": 11, "a": 6, "rating": 1.41, "k4": 0, "k5": 0 },
+            { "name": "蜡笔小鑫", "k": 9, "d": 13, "a": 6, "rating": 0.72, "k4": 0, "k5": 0 },
+            { "name": "勇敢的牛头人", "k": 25, "d": 10, "a": 2, "rating": 2.07, "k4": 1, "k5": 0 }
+          ]
+        },
+        {
+          "myRounds": 9,
+          "enemyRounds": 13,
+          "result": "失败",
+          "players": [
+            { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.61, "k4": 0, "k5": 0 },
+            { "name": "蜡笔小鑫", "k": 14, "d": 18, "a": 4, "rating": 0.89, "k4": 0, "k5": 0 },
+            { "name": "勇敢的牛头人", "k": 21, "d": 21, "a": 6, "rating": 1.32, "k4": 1, "k5": 1 }
+          ]
+        },
+        {
+          "myRounds": 13,
+          "enemyRounds": 10,
+          "result": "",
+          "players": [
+            { "name": "Do迪", "k": 13, "d": 17, "a": 8, "rating": 0.74, "k4": 0, "k5": 0 },
+            { "name": "蜡笔小鑫", "k": 25, "d": 14, "a": 11, "rating": 1.58, "k4": 1, "k5": 0 },
+            { "name": "勇敢的牛头人", "k": 17, "d": 21, "a": 5, "rating": 0.74, "k4": 0, "k5": 0 }
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-05-26",
       "matches": [
         {
