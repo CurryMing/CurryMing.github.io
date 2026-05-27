@@ -46,6 +46,16 @@
             45%{transform:scale(1.012)}
             100%{transform:scale(1)}
         }
+        .scroll-top{
+            position:fixed;bottom:30px;right:30px;z-index:999;
+            width:44px;height:44px;border-radius:50%;border:1px solid var(--border);
+            background:var(--card);color:var(--text);font-size:20px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;
+            box-shadow:0 4px 14px rgba(0,0,0,.18)
+        }
+        .scroll-top.show{opacity:1;visibility:visible}
+        .scroll-top:hover{border-color:var(--accent2)}
         .date{font-size:13px;font-weight:600;color:var(--muted)}
         .meta{margin-top:4px;font-size:22px;font-weight:800;letter-spacing:.2px}
         .score-win{color:#3bcf95}
@@ -57,6 +67,13 @@
         .result-text.draw{color:#98a3b3}
         .arrow{font-size:20px;color:var(--muted)}
         .empty{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted)}
+        .multi-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+        .multi-badge{
+            display:inline-flex;align-items:center;gap:3px;padding:1px 8px;
+            border-radius:999px;font-size:11px;font-weight:700;line-height:1.6;
+        }
+        .multi-badge.k4{background:rgba(0,212,255,.15);color:var(--accent2);border:1px solid rgba(0,212,255,.35)}
+        .multi-badge.k5{background:rgba(255,122,0,.15);color:#ff7a00;border:1px solid rgba(255,122,0,.35)}
     </style>
 </head>
 <body>
@@ -121,23 +138,31 @@
                 const date = String((item && item.date) || "").trim();
                 const matches = Array.isArray(item && item.matches) ? item.matches : [];
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return [];
-                return matches.map((match, idx) => {
-                    const myRounds = Number(match && match.myRounds) || 0;
-                    const enemyRounds = Number(match && match.enemyRounds) || 0;
-                    const result = String((match && match.result) || (myRounds > enemyRounds ? "胜利" : (myRounds < enemyRounds ? "失败" : "平局")));
-                    const myWin = myRounds > enemyRounds;
-                    const enemyWin = enemyRounds > myRounds;
-                    return {
-                        date,
-                        matchIndex: idx + 1,
-                        scoreMy: String(myRounds).padStart(2, "0"),
-                        scoreEnemy: String(enemyRounds).padStart(2, "0"),
-                        myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
-                        enemyScoreClass: enemyWin ? "score-win" : (myWin ? "score-lose" : "score-draw"),
-                        result,
-                        sortOrder: idx + 1
-                    };
+                const players = Array.isArray(match && match.players) ? match.players : [];
+                const multikills = [];
+                players.forEach(p => {
+                    const name = p.name || "";
+                    const k4 = Number(p.k4) || 0;
+                    const k5 = Number(p.k5) || 0;
+                    if (k5 > 0) multikills.push({ name, type: "k5", count: k5 });
+                    if (k4 > 0) multikills.push({ name, type: "k4", count: k4 });
                 });
+                const myRounds = Number(match && match.myRounds) || 0;
+                const enemyRounds = Number(match && match.enemyRounds) || 0;
+                const result = String((match && match.result) || (myRounds > enemyRounds ? "胜利" : (myRounds < enemyRounds ? "失败" : "平局")));
+                const myWin = myRounds > enemyRounds;
+                const enemyWin = enemyRounds > myRounds;
+                return {
+                    date,
+                    matchIndex: idx + 1,
+                    scoreMy: String(myRounds).padStart(2, "0"),
+                    scoreEnemy: String(enemyRounds).padStart(2, "0"),
+                    myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
+                    enemyScoreClass: enemyWin ? "score-win" : (myWin ? "score-lose" : "score-draw"),
+                    result,
+                    multikills,
+                    sortOrder: idx + 1
+                };
             })
             .sort((a, b) => {
                 const byDate = b.date.localeCompare(a.date);
@@ -154,15 +179,23 @@
         }
 
         elEmpty.hidden = true;
-        elList.innerHTML = items.map((item) => `
+        elList.innerHTML = items.map((item) => {
+            const badges = item.multikills && item.multikills.length
+                ? item.multikills.map(mk => {
+                    const label = mk.type === "k5" ? `${mk.name} 5杀` : `${mk.name} ${mk.count}杀`;
+                    return `<span class="multi-badge ${mk.type}">${mk.type === "k5" ? "🔥" : "💥"}${label}</span>`;
+                  }).join("")
+                : "";
+            return `
             <a class="item ${item.result === "胜利" ? "result-win" : (item.result === "失败" ? "result-lose" : "result-draw")}" data-date="${item.date}" data-match-index="${item.matchIndex}" href="daily-report.html?date=${encodeURIComponent(item.date)}&m=${item.matchIndex}">
                 <div>
                     <div class="date">${item.date}</div>
                     <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span> · <span class="result-text ${item.result === "胜利" ? "win" : (item.result === "失败" ? "lose" : "draw")}">${item.result}</span></div>
+                    ${badges ? `<div class="multi-badges">${badges}</div>` : ""}
                 </div>
                 <div class="arrow">›</div>
-            </a>
-        `).join("");
+            </a>`;
+        }).join("");
     }
 
     elBackBtn.addEventListener("click", ()=>{
@@ -186,6 +219,23 @@
     }
 
     init();
+</script>
+<button id="scrollTopBtn" class="scroll-top" type="button" aria-label="回到顶部">↑</button>
+<script>
+    const elScrollBtn = document.getElementById("scrollTopBtn");
+    let scrollTimer;
+    window.addEventListener("scroll", ()=>{
+        if (window.scrollY > 300) {
+            elScrollBtn.classList.add("show");
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => elScrollBtn.classList.remove("show"), 3000);
+        } else {
+            elScrollBtn.classList.remove("show");
+        }
+    });
+    elScrollBtn.addEventListener("click", ()=>{
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 </script>
 </body>
 </html>
