@@ -53,39 +53,44 @@
         #mvpShareCard{
             width:360px;padding:0;overflow:hidden;border-radius:16px;
             font-family:Segoe UI,Microsoft YaHei,sans-serif;
-            background:linear-gradient(145deg,#0f1219,#1a1f2c);
-            border:1px solid rgba(255,215,0,.15);
-            box-shadow:0 0 40px rgba(255,215,0,.06);
+            background:var(--card);
+            border:1px solid var(--border);
+            box-shadow:0 0 40px rgba(0,0,0,.06);
             position:fixed;left:-9999px;top:0;pointer-events:none;
         }
+        :root[data-theme="dark"] #mvpShareCard{background:linear-gradient(145deg,#0f1219,#1a1f2c);border-color:rgba(255,215,0,.15)}
+        :root[data-theme="light"] #mvpShareCard{background:linear-gradient(145deg,#f6f9ff,#eaedf4);border-color:rgba(180,160,80,.15)}
         #mvpShareCard .share-top{
-            background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,215,0,.02));
-            padding:28px 28px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);
+            padding:28px 28px 20px;text-align:center;border-bottom:1px solid var(--border);
         }
+        :root[data-theme="dark"] #mvpShareCard .share-top{background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,215,0,.02))}
+        :root[data-theme="light"] #mvpShareCard .share-top{background:linear-gradient(135deg,#fdf6e3,#fef9ed)}
         #mvpShareCard .share-crown{font-size:44px;line-height:1;margin-bottom:4px}
         #mvpShareCard .share-label{
-            font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.65);
+            font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b8960f;
             font-weight:600;
         }
+        :root[data-theme="dark"] #mvpShareCard .share-label{color:rgba(255,215,0,.65)}
         #mvpShareCard .share-name{
-            font-size:36px;font-weight:900;color:#fff;margin:6px 0 2px;
-            text-shadow:0 2px 12px rgba(0,0,0,.2);
+            font-size:36px;font-weight:900;color:var(--text);margin:6px 0 2px;
         }
         #mvpShareCard .share-body{padding:22px 28px 20px}
         #mvpShareCard .share-stats{display:flex;gap:12px}
         #mvpShareCard .share-stat{
             flex:1;text-align:center;border-radius:12px;
-            background:rgba(255,255,255,.04);padding:12px 8px;
+            background:var(--input-bg);padding:12px 8px;
         }
-        #mvpShareCard .share-stat-val{font-size:20px;font-weight:800;color:#fff}
-        #mvpShareCard .share-stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.3px}
-        #mvpShareCard .share-stat.rating .share-stat-val{color:#78dfb4}
-        #mvpShareCard .share-stat.kills .share-stat-val{color:#ff9aa7}
-        #mvpShareCard .share-stat.matches .share-stat-val{color:#00d4ff}
+        #mvpShareCard .share-stat-val{font-size:20px;font-weight:800;color:var(--text)}
+        #mvpShareCard .share-stat-label{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.3px}
+        #mvpShareCard .share-stat.rating .share-stat-val{color:#3bcf95}
+        :root[data-theme="dark"] #mvpShareCard .share-stat.rating .share-stat-val{color:#78dfb4}
+        #mvpShareCard .share-stat.kills .share-stat-val{color:#ff6b7a}
+        :root[data-theme="dark"] #mvpShareCard .share-stat.kills .share-stat-val{color:#ff9aa7}
+        #mvpShareCard .share-stat.matches .share-stat-val{color:var(--accent2)}
         #mvpShareCard .share-week{
             text-align:center;margin-top:16px;padding-top:14px;
-            border-top:1px solid rgba(255,255,255,.06);
-            font-size:12px;color:rgba(255,255,255,.3);letter-spacing:.5px;
+            border-top:1px solid var(--border);
+            font-size:12px;color:var(--muted);opacity:.7;letter-spacing:.5px;
         }
         .mvp-card{
             border:1px solid var(--border);border-radius:14px;background:var(--card);
