@@ -27,6 +27,17 @@
         .chart-card{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);padding:12px}
         .chart-wrap{position:relative;height:470px}
         #ratingChart{width:100%;height:100%}
+        .chart-tooltip{
+            position:absolute;z-index:5;pointer-events:none;min-width:160px;
+            border:1px solid var(--border);background:var(--card);color:var(--text);
+            border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.45;
+            box-shadow:0 10px 24px rgba(0,0,0,.28);opacity:0;transform:translateY(4px);
+            transition:opacity .12s ease, transform .12s ease;
+        }
+        .chart-tooltip.show{opacity:1;transform:translateY(0)}
+        .tooltip-title{font-weight:700}
+        .tooltip-sub{color:var(--muted);margin-top:2px}
+        .tooltip-rating{margin-top:4px;font-weight:700}
         .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
         .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
         .legend-dot{width:10px;height:10px;border-radius:50%}
@@ -47,6 +58,7 @@
     <div id="chartCard" class="chart-card" hidden>
         <div class="chart-wrap">
             <canvas id="ratingChart" aria-label="rating 走势图"></canvas>
+            <div id="chartTooltip" class="chart-tooltip" aria-hidden="true"></div>
         </div>
         <div id="legend" class="legend"></div>
         <div class="hint">横轴：按时间顺序的对局编号；纵轴：Rating。</div>
@@ -63,8 +75,11 @@
     const elChartCard = document.getElementById("chartCard");
     const elLegend = document.getElementById("legend");
     const elEmpty = document.getElementById("empty");
+    const elTooltip = document.getElementById("chartTooltip");
     const canvas = document.getElementById("ratingChart");
+    const elChartWrap = canvas.parentElement;
     const ctx = canvas.getContext("2d");
+    const chartState = { points: [] };
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -172,6 +187,7 @@
         }
 
         const playerNames = [...valuesByPlayer.keys()].sort();
+        const allPoints = [];
         playerNames.forEach((name, idx) => {
             const color = COLORS[idx % COLORS.length];
             const values = valuesByPlayer.get(name);
@@ -200,11 +216,14 @@
                 if (v == null) return;
                 const x = toX(i);
                 const y = toY(v);
+                allPoints.push({ x, y, player: name, rating: Number(v).toFixed(2), label: labels[i], color });
                 ctx.beginPath();
                 ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fill();
             });
         });
+
+        chartState.points = allPoints;
 
         ctx.fillStyle = textColor;
         ctx.font = "11px Segoe UI";
@@ -224,6 +243,74 @@
         `).join("");
     }
 
+    function hideTooltip(){
+        if (!elTooltip) return;
+        elTooltip.classList.remove("show");
+    }
+
+    function parseLabel(label){
+        const parts = String(label || "").split("#");
+        return {
+            date: parts[0] || "",
+            matchIndex: parts[1] || "1"
+        };
+    }
+
+    function showTooltip(point, mouseX, mouseY){
+        if (!elTooltip || !elChartWrap) return;
+        const parsed = parseLabel(point.label);
+        elTooltip.innerHTML = `
+            <div class="tooltip-title" style="color:${point.color}">${point.player}</div>
+            <div class="tooltip-sub">${parsed.date} · 对局 ${parsed.matchIndex}</div>
+            <div class="tooltip-rating">Rating: ${point.rating}</div>
+        `;
+
+        const wrapRect = elChartWrap.getBoundingClientRect();
+        const offsetX = mouseX - wrapRect.left;
+        const offsetY = mouseY - wrapRect.top;
+        const tooltipWidth = 172;
+        const tooltipHeight = 72;
+
+        let left = offsetX + 14;
+        let top = offsetY - tooltipHeight - 10;
+        if (left + tooltipWidth > wrapRect.width - 6) left = wrapRect.width - tooltipWidth - 6;
+        if (left < 6) left = 6;
+        if (top < 6) top = offsetY + 12;
+
+        elTooltip.style.left = `${left}px`;
+        elTooltip.style.top = `${top}px`;
+        elTooltip.classList.add("show");
+    }
+
+    function bindTooltipEvents(){
+        canvas.addEventListener("mousemove", (e) => {
+            if (!chartState.points.length) return hideTooltip();
+            const x = e.offsetX;
+            const y = e.offsetY;
+            let nearest = null;
+            let nearestDist = Infinity;
+            chartState.points.forEach((p) => {
+                const dx = p.x - x;
+                const dy = p.y - y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < nearestDist) {
+                    nearestDist = d2;
+                    nearest = p;
+                }
+            });
+
+            if (!nearest || nearestDist > 13 * 13) {
+                hideTooltip();
+                return;
+            }
+
+            showTooltip(nearest, e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener("mouseleave", hideTooltip);
+        window.addEventListener("resize", hideTooltip);
+    }
+
     async function init(){
         initTheme();
         try {
@@ -240,6 +327,7 @@
             drawChart(labels, valuesByPlayer);
             renderLegend(valuesByPlayer);
             window.addEventListener("resize", () => drawChart(labels, valuesByPlayer));
+            bindTooltipEvents();
         } catch (error) {
             console.warn("加载 rating 走势失败:", error);
             elChartCard.hidden = true;
