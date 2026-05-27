@@ -67,13 +67,10 @@
         .result-text.draw{color:#98a3b3}
         .arrow{font-size:20px;color:var(--muted)}
         .empty{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted)}
-        .multi-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-        .multi-badge{
-            display:inline-flex;align-items:center;gap:3px;padding:1px 8px;
-            border-radius:999px;font-size:11px;font-weight:700;line-height:1.6;
-        }
-        .multi-badge.k4{background:rgba(0,212,255,.15);color:var(--accent2);border:1px solid rgba(0,212,255,.35)}
-        .multi-badge.k5{background:rgba(255,122,0,.15);color:#ff7a00;border:1px solid rgba(255,122,0,.35)}
+        .multi-badges{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:middle;margin-left:8px}
+        .multi-badge{display:inline-flex;align-items:center;gap:2px;font-size:12px;font-weight:600}
+        .multi-badge.k4{color:var(--accent2)}
+        .multi-badge.k5{color:#ff7a00}
     </style>
 </head>
 <body>
@@ -191,9 +188,8 @@
             return `
             <a class="item ${item.result === "胜利" ? "result-win" : (item.result === "失败" ? "result-lose" : "result-draw")}" data-date="${item.date}" data-match-index="${item.matchIndex}" href="daily-report.html?date=${encodeURIComponent(item.date)}&m=${item.matchIndex}">
                 <div>
-                    <div class="date">${item.date}</div>
+                    <div class="date">${item.date}${badges ? `<span class="multi-badges">${badges}</span>` : ""}</div>
                     <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span> · <span class="result-text ${item.result === "胜利" ? "win" : (item.result === "失败" ? "lose" : "draw")}">${item.result}</span></div>
-                    ${badges ? `<div class="multi-badges">${badges}</div>` : ""}
                 </div>
                 <div class="arrow">›</div>
             </a>`;
