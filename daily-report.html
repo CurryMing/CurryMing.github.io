@@ -267,7 +267,7 @@
                     const matchMultikills = [];
                     (match.players || []).forEach(p => {
                         if (Number(p.k5) > 0) matchMultikills.push(`<span class="multi-badge k5">🔥${p.name} 5杀</span>`);
-                        if (Number(p.k4) > 0) matchMultikills.push(`<span class="multi-badge k4">💥${p.name} ${p.k4}杀</span>`);
+                        if (Number(p.k4) > 0) matchMultikills.push(`<span class="multi-badge k4">💥${p.name} 4杀</span>`);
                     });
                     const matchBadgesHtml = matchMultikills.length ? `<div class="multi-badges" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${matchMultikills.join("")}</div>` : "";
                     return `
@@ -288,17 +288,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${match.players.map(p => {
-                                    const badges = [];
-                                    if (Number(p.k5) > 0) badges.push(`<span class="multi-badge k5">🔥${p.name} 5杀</span>`);
-                                    if (Number(p.k4) > 0) badges.push(`<span class="multi-badge k4">💥${p.name} ${p.k4}杀</span>`);
-                                    return `
+                                ${match.players.map(p => `
                                     <tr>
-                                        <td>${p.name}${badges.length ? badges.join("") : ""}</td>
+                                        <td>${p.name}</td>
                                         <td>${p.k}/${p.d}/${p.a}</td>
                                         <td class="${Number(p.rating) >= 1 ? "rating-good" : "rating-bad"}">${Number(p.rating).toFixed(2)}</td>
-                                    </tr>`;
-                                }).join("")}
+                                    </tr>
+                                `).join("")}
                             </tbody>
                         </table>
                     </section>`;
