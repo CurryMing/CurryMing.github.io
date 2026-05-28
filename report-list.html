@@ -56,15 +56,12 @@
         }
         .scroll-top.show{opacity:1;visibility:visible}
         .scroll-top:hover{border-color:var(--accent2)}
-        .date{font-size:13px;font-weight:600;color:var(--muted)}
+        .date{font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center}
         .meta{margin-top:4px;font-size:22px;font-weight:800;letter-spacing:.2px}
         .score-win{color:#3bcf95}
         .score-lose{color:#ff6b7a}
         .score-draw{color:#98a3b3}
         .score-sep{color:var(--muted);padding:0 3px}
-        .result-text.win{color:#3bcf95}
-        .result-text.lose{color:#ff6b7a}
-        .result-text.draw{color:#98a3b3}
         .arrow{font-size:20px;color:var(--muted)}
         .empty{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted)}
         .multi-badges{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:middle;margin-left:8px}
@@ -189,7 +186,7 @@
             <a class="item ${item.result === "胜利" ? "result-win" : (item.result === "失败" ? "result-lose" : "result-draw")}" data-date="${item.date}" data-match-index="${item.matchIndex}" href="daily-report.html?date=${encodeURIComponent(item.date)}&m=${item.matchIndex}">
                 <div>
                     <div class="date">${item.date}${badges ? `<span class="multi-badges">${badges}</span>` : ""}</div>
-                    <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span> · <span class="result-text ${item.result === "胜利" ? "win" : (item.result === "失败" ? "lose" : "draw")}">${item.result}</span></div>
+                    <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span></div>
                 </div>
                 <div class="arrow">›</div>
             </a>`;
