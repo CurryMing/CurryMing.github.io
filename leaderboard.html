@@ -50,6 +50,19 @@
         }
         .tab:hover{border-color:var(--accent2);color:var(--text)}
         .tab.active{background:rgba(0,212,255,.12);border-color:var(--accent2);color:var(--accent2)}
+        .weekly-wrap{margin-top:24px}
+        .weekly-wrap h2{font-size:18px;margin:0 0 10px;color:var(--text)}
+        .weekly-block{border:1px solid var(--border);border-radius:12px;background:var(--card);margin-bottom:10px;overflow:hidden}
+        .weekly-head{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+        .weekly-head .mvp-badge{font-size:12px;font-weight:600;color:var(--gold)}
+        .weekly-table{width:100%;border-collapse:collapse;font-size:13px}
+        .weekly-table th,.weekly-table td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+        .weekly-table th{font-size:11px;color:var(--muted);letter-spacing:.2px}
+        .weekly-table tr:last-child td{border-bottom:none}
+        .weekly-table .mvp-row{background:rgba(255,215,0,.08)}
+        .weekly-table .mvp-row td{font-weight:600}
+        .weekly-mvp-name{color:var(--gold);font-weight:700}
+        .weekly-table .rating-cell{color:var(--accent2);font-weight:600}
         .scroll-top{
             position:fixed;bottom:30px;right:30px;z-index:999;
             width:44px;height:44px;border-radius:50%;border:1px solid var(--border);
@@ -82,6 +95,7 @@
     </div>
 
     <div id="tableWrap" class="table-wrap"></div>
+    <div id="weeklyWrap"></div>
 </div>
 
 <button id="scrollTopBtn" class="scroll-top" type="button" aria-label="回到顶部">↑</button>
@@ -116,6 +130,24 @@
         return 1 + Math.round((d - jan4) / 86400000 / 7);
     }
 
+    function getWeekMonday(dateStr){
+        const d = new Date(dateStr + "T00:00:00");
+        const day = d.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() + diff);
+        return monday.toISOString().slice(0, 10);
+    }
+
+    function getWeekSunday(dateStr){
+        const d = new Date(dateStr + "T00:00:00");
+        const day = d.getDay();
+        const diff = day === 0 ? 0 : 7 - day;
+        const sunday = new Date(d);
+        sunday.setDate(d.getDate() + diff);
+        return sunday.toISOString().slice(0, 10);
+    }
+
     function computeRankings(raw){
         const list = Array.isArray(raw && raw.reports) ? raw.reports : [];
         const allMatches = list
@@ -143,24 +175,55 @@
         });
 
         const mvpCounts = new Map();
-        for (const [, weekMatches] of weekGroups) {
+        const weeklyDetails = [];
+
+        for (const [weekKey, weekMatches] of weekGroups) {
             const stats = new Map();
             weekMatches.forEach(m => {
                 (m.players || []).forEach(p => {
                     const name = p.name || "未知";
-                    if (!stats.has(name)) stats.set(name, { ratingSum:0, count:0 });
+                    if (!stats.has(name)) stats.set(name, { k:0, d:0, a:0, ratingSum:0, count:0 });
                     const s = stats.get(name);
+                    s.k += Number(p.k) || 0;
+                    s.d += Number(p.d) || 0;
+                    s.a += Number(p.a) || 0;
                     s.ratingSum += Number(p.rating) || 0;
                     s.count++;
                 });
             });
+
             let bestName = null, bestAvg = -1;
+            const playerEntries = [];
             for (const [name, s] of stats) {
                 const avg = s.ratingSum / s.count;
+                playerEntries.push({
+                    name,
+                    avgRating: avg,
+                    avgK: (s.k / s.count).toFixed(1),
+                    avgD: (s.d / s.count).toFixed(1),
+                    avgA: (s.a / s.count).toFixed(1),
+                    matches: s.count
+                });
                 if (avg > bestAvg) { bestAvg = avg; bestName = name; }
             }
-            if (bestName) mvpCounts.set(bestName, (mvpCounts.get(bestName) || 0) + 1);
+            if (bestName) {
+                mvpCounts.set(bestName, (mvpCounts.get(bestName) || 0) + 1);
+                const sampleDate = weekMatches[0].date;
+                const monday = getWeekMonday(sampleDate);
+                const sunday = getWeekSunday(sampleDate);
+                const weekNum = weekKey.split("-")[0];
+                weeklyDetails.push({
+                    weekKey,
+                    weekNumber: weekNum,
+                    dateRange: `${monday.slice(5).replace("-","/")} - ${sunday.slice(5).replace("-","/")}`,
+                    mvpName: bestName,
+                    mvpAvgRating: bestAvg.toFixed(2),
+                    players: playerEntries.sort((a, b) => b.avgRating - a.avgRating)
+                });
+            }
         }
+
+        weeklyDetails.sort((a, b) => b.weekKey.localeCompare(a.weekKey));
 
         const rankings = [];
         for (const [name, agg] of playerAgg) {
@@ -172,7 +235,7 @@
                 kills: agg.kills
             });
         }
-        return rankings;
+        return { rankings, weeklyDetails };
     }
 
     function sortRankings(rankings, field, desc){
@@ -212,9 +275,11 @@
 
     function renderTable(){
         const elWrap = document.getElementById("tableWrap");
-        const rankings = computeRankings(window._rawData || []);
+        const result = computeRankings(window._rawData || []);
+        const rankings = result.rankings;
         if (!rankings.length) {
             elWrap.innerHTML = '<div class="empty">暂无战绩数据。</div>';
+            renderWeeklyData(null);
             return;
         }
 
@@ -250,6 +315,52 @@
                     `).join("")}
                 </tbody>
             </table>
+        `;
+
+        renderWeeklyData(result.weeklyDetails);
+    }
+
+    function renderWeeklyData(weeklyDetails){
+        const elWrap = document.getElementById("weeklyWrap");
+        if (!weeklyDetails || !weeklyDetails.length) {
+            elWrap.innerHTML = "";
+            return;
+        }
+
+        elWrap.innerHTML = `
+            <div class="weekly-wrap">
+                <h2>📋 每周评选数据</h2>
+                ${weeklyDetails.map(w => `
+                    <div class="weekly-block">
+                        <div class="weekly-head">
+                            <span>第 ${w.weekNumber} 周 · ${w.dateRange}</span>
+                            <span class="mvp-badge">👑 MVP: ${w.mvpName}（Rating ${w.mvpAvgRating}）</span>
+                        </div>
+                        <table class="weekly-table">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>玩家</th>
+                                    <th>场次</th>
+                                    <th>平均 Rating</th>
+                                    <th>K/D/A</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${w.players.map((p, i) => `
+                                    <tr class="${p.name === w.mvpName ? "mvp-row" : ""}">
+                                        <td>${i + 1}</td>
+                                        <td>${p.name === w.mvpName ? `<span class="weekly-mvp-name">${p.name}</span>` : p.name}</td>
+                                        <td>${p.matches}</td>
+                                        <td class="rating-cell">${p.avgRating.toFixed(2)}</td>
+                                        <td>${p.avgK}/${p.avgD}/${p.avgA}</td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                `).join("")}
+            </div>
         `;
     }
 
