@@ -343,7 +343,7 @@
                                     <th>玩家</th>
                                     <th>场次</th>
                                     <th>平均 Rating</th>
-                                    <th>K-D-A</th>
+                                    <th>K/D/A</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -353,7 +353,7 @@
                                         <td>${p.name === w.mvpName ? `<span class="weekly-mvp-name">${p.name}</span>` : p.name}</td>
                                         <td>${p.matches}</td>
                                         <td class="rating-cell">${p.avgRating.toFixed(2)}</td>
-                                        <td>${p.avgK}-${p.avgD}-${p.avgA}</td>
+                                        <td>${p.avgK}/${p.avgD}/${p.avgA}</td>
                                     </tr>
                                 `).join("")}
                             </tbody>

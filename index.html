@@ -311,7 +311,7 @@
                 </div>
                 <div class="share-stat kills">
                     <div class="share-stat-val" id="shareMvpKda"></div>
-                    <div class="share-stat-label">K-D-A</div>
+                    <div class="share-stat-label">K/D/A</div>
                 </div>
                 <div class="share-stat matches">
                     <div class="share-stat-val" id="shareMvpMatches"></div>
@@ -595,13 +595,13 @@
         if (!mvp) { elCard.classList.add("mvp-empty"); return; }
 
         elName.textContent = mvp.name;
-        elStats.innerHTML = `Rating <strong>${mvp.avgRating}</strong> · K-D-A ${mvp.avgK}-${mvp.avgD}-${mvp.avgA} · ${mvp.matchCount} 场`;
+        elStats.innerHTML = `Rating <strong>${mvp.avgRating}</strong> · K/D/A ${mvp.avgK}/${mvp.avgD}/${mvp.avgA} · ${mvp.matchCount} 场`;
         elWeek.textContent = `第 ${mvp.weekNumber} 周 · ${mvp.dateRange}`;
         elCard.classList.remove("mvp-empty");
 
         document.getElementById("shareMvpName").textContent = mvp.name;
         document.getElementById("shareMvpRating").textContent = mvp.avgRating;
-        document.getElementById("shareMvpKda").textContent = `${mvp.avgK}-${mvp.avgD}-${mvp.avgA}`;
+        document.getElementById("shareMvpKda").textContent = `${mvp.avgK}/${mvp.avgD}/${mvp.avgA}`;
         document.getElementById("shareMvpMatches").textContent = `${mvp.matchCount} 场`;
         document.getElementById("shareMvpWeek").textContent = `第 ${mvp.weekNumber} 周 · ${mvp.dateRange}`;
     }
