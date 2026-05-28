@@ -2,6 +2,17 @@
   "videos": [
     {
       "id": "local-001",
+      "title": "牛头人 沙二五杀 震天操作",
+      "map": "dust2",
+      "date": "2026-05-27",
+      "tags": ["沙二", "五杀"],
+      "type": "local",
+      "src": "990ba7f9561bc34dbbf289ad26beba12_raw.mp4",
+      "poster": "video2.png",
+      "baseLikes": 999999
+    },
+    {
+      "id": "local-001",
       "title": "Do迪 沙二A大坑 1v4 逆天操作",
       "map": "dust2",
       "date": "2026-05-07",
