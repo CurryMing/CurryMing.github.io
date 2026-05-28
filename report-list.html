@@ -7,11 +7,11 @@
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <style>
         :root{
-            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2; --enemy:#bcc6d4;
             --border:#2a303b; --accent2:#00d4ff; --input-bg:#12161d;
         }
         :root[data-theme="light"]{
-            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
+            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83; --enemy:#3d4b60;
             --border:#d5dfec; --accent2:#1e8dff; --input-bg:#f7f9fd;
         }
         *{box-sizing:border-box}
@@ -61,6 +61,7 @@
         .score-win{color:#3bcf95}
         .score-lose{color:#ff6b7a}
         .score-draw{color:#98a3b3}
+        .score-enemy{color:var(--enemy)}
         .score-sep{color:var(--muted);padding:0 3px}
         .arrow{font-size:20px;color:var(--muted)}
         .empty{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted)}
@@ -153,7 +154,7 @@
                         scoreMy: String(myRounds).padStart(2, "0"),
                         scoreEnemy: String(enemyRounds).padStart(2, "0"),
                         myScoreClass: myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw"),
-                        enemyScoreClass: "",
+                        enemyScoreClass: "score-enemy",
                         result,
                         multikills,
                         sortOrder: idx + 1

@@ -130,13 +130,20 @@
         return 1 + Math.round((d - jan4) / 86400000 / 7);
     }
 
+    function toLocalDateStr(d){
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    }
+
     function getWeekMonday(dateStr){
         const d = new Date(dateStr + "T00:00:00");
         const day = d.getDay();
         const diff = day === 0 ? -6 : 1 - day;
         const monday = new Date(d);
         monday.setDate(d.getDate() + diff);
-        return monday.toISOString().slice(0, 10);
+        return toLocalDateStr(monday);
     }
 
     function getWeekSunday(dateStr){
@@ -145,7 +152,7 @@
         const diff = day === 0 ? 0 : 7 - day;
         const sunday = new Date(d);
         sunday.setDate(d.getDate() + diff);
-        return sunday.toISOString().slice(0, 10);
+        return toLocalDateStr(sunday);
     }
 
     function computeRankings(raw){
@@ -285,6 +292,11 @@
 
         const sorted = sortRankings(rankings, currentSort, sortDesc);
 
+        const maxMvp = Math.max(...rankings.map(p => p.mvp), 0);
+        const maxK5 = Math.max(...rankings.map(p => p.k5), 0);
+        const maxK4 = Math.max(...rankings.map(p => p.k4), 0);
+        const maxKills = Math.max(...rankings.map(p => p.kills), 0);
+
         function thHtml(label, field){
             const active = currentSort === field;
             return `<th class="${active ? "sorted" : ""}">${label}${active ? `<span class="sort-arrow">${sortDesc ? "▼" : "▲"}</span>` : ""}</th>`;
@@ -307,10 +319,10 @@
                         <tr>
                             <td class="rank-cell ${getRankClass(i)}">${getRankDisplay(i)}</td>
                             <td class="player-name">${p.name}</td>
-                            <td class="${currentSort === "mvp" ? "stat-highlight" : ""}">${p.mvp}</td>
-                            <td class="${currentSort === "k5" ? "stat-highlight" : ""}">${p.k5}</td>
-                            <td class="${currentSort === "k4" ? "stat-highlight" : ""}">${p.k4}</td>
-                            <td class="${currentSort === "kills" ? "stat-highlight" : ""}">${p.kills}</td>
+                            <td class="${p.mvp === maxMvp && maxMvp > 0 ? "stat-highlight" : ""}">${p.mvp}</td>
+                            <td class="${p.k5 === maxK5 && maxK5 > 0 ? "stat-highlight" : ""}">${p.k5}</td>
+                            <td class="${p.k4 === maxK4 && maxK4 > 0 ? "stat-highlight" : ""}">${p.k4}</td>
+                            <td class="${p.kills === maxKills && maxKills > 0 ? "stat-highlight" : ""}">${p.kills}</td>
                         </tr>
                     `).join("")}
                 </tbody>
@@ -330,11 +342,12 @@
         elWrap.innerHTML = `
             <div class="weekly-wrap">
                 <h2>📋 每周评选数据</h2>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:10px">评选规则：取每周所有对局数据，按选手平均 Rating 排名，最高者当选本周 MVP。</div>
                 ${weeklyDetails.map(w => `
                     <div class="weekly-block">
                         <div class="weekly-head">
                             <span>第 ${w.weekNumber} 周 · ${w.dateRange}</span>
-                            <span class="mvp-badge">👑 MVP: ${w.mvpName}（Rating ${w.mvpAvgRating}）</span>
+                            <span class="mvp-badge">👑 MVP: ${w.mvpName}</span>
                         </div>
                         <table class="weekly-table">
                             <thead>
@@ -342,7 +355,7 @@
                                     <th>排名</th>
                                     <th>玩家</th>
                                     <th>场次</th>
-                                    <th>平均 Rating</th>
+                                    <th>Rating</th>
                                     <th>K/D/A</th>
                                 </tr>
                             </thead>

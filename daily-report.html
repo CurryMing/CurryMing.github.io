@@ -7,12 +7,12 @@
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <style>
         :root{
-            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2;
+            --bg:#0f1115; --card:#171b22; --text:#f5f7fa; --muted:#9aa4b2; --enemy:#bcc6d4;
             --border:#2a303b; --accent2:#00d4ff; --input-bg:#12161d;
             --score-win-bg:rgba(59,207,149,.16); --score-lose-bg:rgba(255,107,122,.16); --score-draw-bg:rgba(154,164,178,.14);
         }
         :root[data-theme="light"]{
-            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83;
+            --bg:#f3f6fb; --card:#ffffff; --text:#1b2430; --muted:#5f6f83; --enemy:#3d4b60;
             --border:#d5dfec; --accent2:#1e8dff; --input-bg:#f7f9fd;
             --score-win-bg:rgba(59,207,149,.2); --score-lose-bg:rgba(255,107,122,.2); --score-draw-bg:rgba(95,111,131,.12);
         }
@@ -47,6 +47,7 @@
         .score-win{color:#3bcf95}
         .score-lose{color:#ff6b7a}
         .score-draw{color:#98a3b3}
+        .score-enemy{color:var(--enemy)}
         .match-summary{margin-top:0;border:none;border-radius:8px;padding:8px 10px;background:transparent}
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
@@ -253,7 +254,7 @@
                     const isDraw = !myWin && !enemyWin;
                     const headClass = myWin ? "bg-win" : (enemyWin ? "bg-lose" : "bg-draw");
                     const myScoreClass = myWin ? "score-win" : (enemyWin ? "score-lose" : "score-draw");
-                    const enemyScoreClass = "";
+                    const enemyScoreClass = "score-enemy";
                     const myRoundsText = String(match.myRounds).padStart(2, "0");
                     const enemyRoundsText = String(match.enemyRounds).padStart(2, "0");
                     const matchMultikills = [];
@@ -281,7 +282,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${match.players.map(p => `
+                                ${[...match.players].sort((a, b) => b.rating - a.rating).map(p => `
                                     <tr>
                                         <td>${p.name}</td>
                                         <td>${p.k}/${p.d}/${p.a}</td>

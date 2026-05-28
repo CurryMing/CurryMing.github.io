@@ -499,13 +499,20 @@
         return 1 + Math.round((d - jan4) / 86400000 / 7);
     }
 
+    function toLocalDateStr(d){
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    }
+
     function getWeekMonday(dateStr){
         const d = new Date(dateStr + "T00:00:00");
         const day = d.getDay();
         const diff = day === 0 ? -6 : 1 - day;
         const monday = new Date(d);
         monday.setDate(d.getDate() + diff);
-        return monday.toISOString().slice(0, 10);
+        return toLocalDateStr(monday);
     }
 
     function getWeekSunday(dateStr){
@@ -514,7 +521,7 @@
         const diff = day === 0 ? 0 : 7 - day;
         const sunday = new Date(d);
         sunday.setDate(d.getDate() + diff);
-        return sunday.toISOString().slice(0, 10);
+        return toLocalDateStr(sunday);
     }
 
     async function computeMvp(){
