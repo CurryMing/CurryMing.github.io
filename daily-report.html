@@ -29,9 +29,9 @@
         .btn{cursor:pointer}
         .btn:hover{border-color:var(--accent2)}
         .toolbar{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
-        .table-wrap{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);overflow:auto}
-        .report-list{display:flex;flex-direction:column;gap:12px;padding:12px}
         .report-match{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+        .report-match + .report-match{margin-top:12px}
+        .report-match:first-child{margin-top:12px}
         .report-match.located{
             outline:2px solid var(--accent2);
             box-shadow:0 0 0 4px rgba(0,212,255,.18), 0 10px 22px rgba(0,0,0,.2);
@@ -42,14 +42,11 @@
         .match-head.bg-lose{background:var(--score-lose-bg)}
         .match-head.bg-draw{background:var(--score-draw-bg)}
         .match-summary{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--card);padding:12px}
-        .match-score{font-size:20px;font-weight:800;letter-spacing:.3px}
+        .match-score{font-size:20px;font-weight:800;letter-spacing:.3px;display:flex;align-items:center}
         .match-score-sep{color:var(--muted);padding:0 4px}
         .score-win{color:#3bcf95}
         .score-lose{color:#ff6b7a}
         .score-draw{color:#98a3b3}
-        .match-result{font-size:22px;font-weight:900;line-height:1;align-self:center}
-        .match-result.win{color:#3bcf95}
-        .match-result.lose{color:#ff6b7a}
         .match-summary{margin-top:0;border:none;border-radius:8px;padding:8px 10px;background:transparent}
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
@@ -84,13 +81,13 @@
     <div class="topbar">
         <div>
             <h1>CSGO 战绩日报</h1>
-            <p class="sub">展示某一天开黑对局详情：姓名、K/D/A、Rating。</p>
+            <p class="sub">展示某一天开黑对局详情：姓名、K-D-A、Rating。</p>
         </div>
     </div>
 
     <div class="toolbar">
         <input id="reportDate" class="input" type="date" aria-label="选择战绩日期" />
-        <button id="backBtn" class="btn" type="button">返回高光页</button>
+        <button id="backBtn" class="btn" type="button">返回战绩列表</button>
     </div>
 
     <div id="tableWrap" class="table-wrap"></div>
@@ -250,10 +247,7 @@
             return;
         }
 
-        elWrap.innerHTML = `
-            <div class="report-list">
-                ${report.matches.map((match, idx) => {
-                    const resultClass = match.result === "胜利" ? "win" : (match.result === "失败" ? "lose" : "");
+        elWrap.innerHTML = report.matches.map((match, idx) => {
                     const myWin = match.myRounds > match.enemyRounds;
                     const enemyWin = match.enemyRounds > match.myRounds;
                     const isDraw = !myWin && !enemyWin;
@@ -277,13 +271,12 @@
                             <div class="match-summary">
                                 <div class="match-score">${matchScoreWithBadges}</div>
                             </div>
-                            <div class="match-result ${resultClass}">${match.result}</div>
                         </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th>姓名</th>
-                                    <th>K/D/A</th>
+                                    <th>K-D-A</th>
                                     <th>Rating</th>
                                 </tr>
                             </thead>
@@ -291,16 +284,14 @@
                                 ${match.players.map(p => `
                                     <tr>
                                         <td>${p.name}</td>
-                                        <td>${p.k}/${p.d}/${p.a}</td>
+                                        <td>${p.k}-${p.d}-${p.a}</td>
                                         <td class="${Number(p.rating) >= 1 ? "rating-good" : "rating-bad"}">${Number(p.rating).toFixed(2)}</td>
                                     </tr>
                                 `).join("")}
                             </tbody>
                         </table>
                     </section>`;
-                }).join("")}
-            </div>
-        `;
+                }).join("");
 
         const matchParam = Number(new URLSearchParams(location.search).get("m"));
         if (Number.isFinite(matchParam) && matchParam > 0) {
