@@ -219,10 +219,11 @@
                 const monday = getWeekMonday(sampleDate);
                 const sunday = getWeekSunday(sampleDate);
                 const weekNum = weekKey.split("-")[0];
+                const yearPrefix = monday.slice(0, 4) !== String(new Date().getFullYear()) ? monday.slice(0, 4) + "/" : "";
                 weeklyDetails.push({
                     weekKey,
                     weekNumber: weekNum,
-                    dateRange: `${monday.slice(5).replace("-","/")} - ${sunday.slice(5).replace("-","/")}`,
+                    dateRange: `${yearPrefix}${monday.slice(5).replace("-","/")} - ${sunday.slice(5).replace("-","/")}`,
                     mvpName: bestName,
                     mvpAvgRating: bestAvg.toFixed(2),
                     players: playerEntries.sort((a, b) => b.avgRating - a.avgRating)

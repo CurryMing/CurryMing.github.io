@@ -478,6 +478,14 @@
 
     function getLikeCount(v){ return v.baseLikes + (liked.has(v.id) ? 1 : 0); }
 
+    function stripYear(dateStr){
+        if (!dateStr) return dateStr;
+        const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return dateStr;
+        const thisYear = String(new Date().getFullYear());
+        return m[1] === thisYear ? `${m[2]}-${m[3]}` : dateStr;
+    }
+
     function formatDate(dateStr){
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
@@ -485,10 +493,10 @@
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
         const diffDays = Math.round((today - target) / 86400000);
-        if (diffDays === 0) return "今天 " + dateStr;
-        if (diffDays === 1) return "昨天 " + dateStr;
-        if (diffDays === 2) return "前天 " + dateStr;
-        return dateStr;
+        if (diffDays === 0) return "今天 " + stripYear(dateStr);
+        if (diffDays === 1) return "昨天 " + stripYear(dateStr);
+        if (diffDays === 2) return "前天 " + stripYear(dateStr);
+        return stripYear(dateStr);
     }
 
     function getWeekNumber(dateStr){
@@ -571,7 +579,9 @@
             const sampleDate = weekMatches[0].date;
             const monday = getWeekMonday(sampleDate);
             const sunday = getWeekSunday(sampleDate);
-            const monParts = monday.slice(5).replace("-","/");
+            const thisYear = String(new Date().getFullYear());
+            const monYear = monday.slice(0, 4);
+            const monParts = (monYear !== thisYear ? monYear + "/" : "") + monday.slice(5).replace("-","/");
             const sunParts = sunday.slice(5).replace("-","/");
             const weekNum = latestWeek.split("-")[0];
 
@@ -914,7 +924,7 @@
         if (!elChangelogList) return;
         elChangelogList.innerHTML = CHANGELOG.map(item => `
             <section class="changelog-item">
-                <div><span class="changelog-ver">${item.version}</span><span class="changelog-date">${item.date}</span></div>
+                <div><span class="changelog-ver">${item.version}</span><span class="changelog-date">${stripYear(item.date)}</span></div>
                 <ul class="changelog-desc">${item.changes.map(c => `<li>${c}</li>`).join("")}</ul>
             </section>
         `).join("");
