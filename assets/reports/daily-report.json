@@ -6,7 +6,6 @@
         {
           "myRounds": 13,
           "enemyRounds": 6,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 18, "d": 11, "a": 6, "rating": 1.41, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 9, "d": 13, "a": 6, "rating": 0.72, "k4": 0, "k5": 0 },
@@ -16,7 +15,6 @@
         {
           "myRounds": 9,
           "enemyRounds": 13,
-          "result": "失败",
           "players": [
             { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.61, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 14, "d": 18, "a": 4, "rating": 0.89, "k4": 0, "k5": 0 },
@@ -26,7 +24,6 @@
         {
           "myRounds": 13,
           "enemyRounds": 10,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 13, "d": 17, "a": 8, "rating": 0.74, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 25, "d": 14, "a": 11, "rating": 1.58, "k4": 1, "k5": 0 },
@@ -41,7 +38,6 @@
         {
           "myRounds": 9,
           "enemyRounds": 13,
-          "result": "失败",
           "players": [
             { "name": "Do迪", "k": 10, "d": 18, "a": 8, "rating": 0.61, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 24, "d": 18, "a": 7, "rating": 1.46, "k4": 1, "k5": 0 },
@@ -56,7 +52,6 @@
         {
           "myRounds": 13,
           "enemyRounds": 7,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 20, "d": 13, "a": 4, "rating": 1.38, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 17, "d": 12, "a": 10, "rating": 1.30, "k4": 0, "k5": 0 },
@@ -66,7 +61,6 @@
         {
           "myRounds": 11,
           "enemyRounds": 13,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 15, "d": 17, "a": 5, "rating": 0.91, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 19, "d": 16, "a": 7, "rating": 1.05, "k4": 0, "k5": 0 },
@@ -76,7 +70,6 @@
         {
           "myRounds": 13,
           "enemyRounds": 0,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 6, "d": 6, "a": 9, "rating": 0.83, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 17, "d": 4, "a": 4, "rating": 2.10, "k4": 1, "k5": 0 },
@@ -91,7 +84,6 @@
         {
           "myRounds": 13,
           "enemyRounds": 11,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 20, "d": 13, "a": 8, "rating": 1.14, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 20, "d": 11, "a": 5, "rating": 1.31, "k4": 0, "k5": 0 },
@@ -101,7 +93,6 @@
         {
           "myRounds": 11,
           "enemyRounds": 13,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 20, "d": 14, "a": 10, "rating": 1.24, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 17, "d": 16, "a": 8, "rating": 1.03, "k4": 0, "k5": 0 },
@@ -116,7 +107,6 @@
         {
           "myRounds": 6,
           "enemyRounds": 13,
-          "result": "",
           "players": [
             { "name": "Do迪", "k": 13, "d": 14, "a": 6, "rating": 0.91, "k4": 0, "k5": 0 },
             { "name": "蜡笔小鑫", "k": 14, "d": 17, "a": 6, "rating": 0.85, "k4": 0, "k5": 0 },
