@@ -333,6 +333,14 @@
         elTooltip.classList.remove("show");
     }
 
+    function stripYear(dateStr){
+        if (!dateStr) return dateStr;
+        const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return dateStr;
+        const thisYear = String(new Date().getFullYear());
+        return m[1] === thisYear ? `${m[2]}-${m[3]}` : dateStr;
+    }
+
     function parseLabel(label){
         const parts = String(label || "").split("#");
         return {
@@ -356,7 +364,7 @@
             .join("");
         elTooltip.innerHTML = `
             <div class="tooltip-title">对局详情</div>
-            <div class="tooltip-sub">${parsed.date} · 对局 ${parsed.matchIndex}</div>
+            <div class="tooltip-sub">${stripYear(parsed.date)} · 对局 ${parsed.matchIndex}</div>
             ${rows || `<div class="tooltip-rating">无数据</div>`}
         `;
 

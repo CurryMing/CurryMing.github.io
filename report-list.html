@@ -168,6 +168,14 @@
             });
     }
 
+    function stripYear(dateStr){
+        if (!dateStr) return dateStr;
+        const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return dateStr;
+        const thisYear = String(new Date().getFullYear());
+        return m[1] === thisYear ? `${m[2]}-${m[3]}` : dateStr;
+    }
+
     function renderItems(items){
         if (!items.length) {
             elList.innerHTML = "";
@@ -186,7 +194,7 @@
             return `
             <a class="item ${item.result === "胜利" ? "result-win" : (item.result === "失败" ? "result-lose" : "result-draw")}" data-date="${item.date}" data-match-index="${item.matchIndex}" href="daily-report.html?date=${encodeURIComponent(item.date)}&m=${item.matchIndex}">
                 <div>
-                    <div class="date">${item.date}${badges ? `<span class="multi-badges">${badges}</span>` : ""}</div>
+                    <div class="date">${stripYear(item.date)}${badges ? `<span class="multi-badges">${badges}</span>` : ""}</div>
                     <div class="meta"><span class="${item.myScoreClass}">${item.scoreMy}</span><span class="score-sep">:</span><span class="${item.enemyScoreClass}">${item.scoreEnemy}</span></div>
                 </div>
                 <div class="arrow">›</div>
