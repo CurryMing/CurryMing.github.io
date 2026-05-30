@@ -43,13 +43,6 @@
         .player-name{font-weight:600}
         .stat-highlight{color:var(--accent2);font-weight:700}
         .empty{padding:30px 16px;text-align:center;color:var(--muted);font-size:14px}
-        .tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
-        .tab{
-            padding:6px 16px;border:1px solid var(--border);border-radius:999px;background:transparent;
-            color:var(--muted);font-size:13px;cursor:pointer
-        }
-        .tab:hover{border-color:var(--accent2);color:var(--text)}
-        .tab.active{background:rgba(0,212,255,.12);border-color:var(--accent2);color:var(--accent2)}
         .weekly-wrap{margin-top:24px}
         .weekly-wrap h2{font-size:18px;margin:0 0 10px;color:var(--text)}
         .weekly-block{border:1px solid var(--border);border-radius:12px;background:var(--card);margin-bottom:10px;overflow:hidden}
@@ -85,13 +78,6 @@
         <div class="actions">
             <button id="backBtn" class="btn" type="button">返回高光页</button>
         </div>
-    </div>
-
-    <div class="tabs" id="tabs">
-        <button class="tab active" data-sort="mvp">MVP 次数</button>
-        <button class="tab" data-sort="k5">5杀</button>
-        <button class="tab" data-sort="k4">4杀</button>
-        <button class="tab" data-sort="kills">总击杀</button>
     </div>
 
     <div id="tableWrap" class="table-wrap"></div>
@@ -275,9 +261,6 @@
             currentSort = field;
             sortDesc = true;
         }
-        document.querySelectorAll(".tab").forEach(t => {
-            t.classList.toggle("active", t.dataset.sort === field);
-        });
         renderTable();
     }
 
@@ -300,7 +283,7 @@
 
         function thHtml(label, field){
             const active = currentSort === field;
-            return `<th class="${active ? "sorted" : ""}">${label}${active ? `<span class="sort-arrow">${sortDesc ? "▼" : "▲"}</span>` : ""}</th>`;
+            return `<th class="${active ? "sorted" : ""}" data-sort="${field}">${label}<span class="sort-arrow">${active && sortDesc ? "▲" : "▼"}</span></th>`;
         }
 
         elWrap.innerHTML = `
@@ -385,9 +368,9 @@
             location.href = "index.html";
         });
 
-        document.getElementById("tabs").addEventListener("click", e => {
-            const tab = e.target.closest("[data-sort]");
-            if (tab) setSort(tab.dataset.sort);
+        document.getElementById("tableWrap").addEventListener("click", e => {
+            const th = e.target.closest("th[data-sort]");
+            if (th) setSort(th.dataset.sort);
         });
 
         try {
