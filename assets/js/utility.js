@@ -100,7 +100,7 @@ function render(items){
     elGrid.innerHTML = items.map(item => {
         const catClass = CATEGORY_COLORS[item.category] || "smoke";
         const thumbHtml = item.video
-            ? `<img class="thumb-video" src="${item.video}" alt="${item.title}" loading="lazy" />`
+            ? `<video class="thumb-video" src="${item.video}" muted autoplay loop playsinline></video>`
             : `<div class="thumb-placeholder">${CATEGORY_ICONS[item.category] || "🎯"}</div>`;
         return `
         <div class="card" data-id="${item.id}">
@@ -139,6 +139,8 @@ function openModal(item){
     if (item.video) {
         elModalVideo.src = item.video;
         elModalVideo.hidden = false;
+        elModalVideo.currentTime = 0;
+        elModalVideo.play();
     } else {
         elModalVideo.hidden = true;
     }
@@ -149,6 +151,7 @@ function openModal(item){
 
 function closeModal(){
     elModal.hidden = true;
+    elModalVideo.pause();
     document.body.style.overflow = "";
 }
 
