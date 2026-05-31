@@ -43,6 +43,13 @@ const elStats = document.getElementById("statsBar");
 const elMapFilter = document.getElementById("mapFilter");
 const elCategoryFilter = document.getElementById("categoryFilter");
 const elBackBtn = document.getElementById("backBtn");
+const elModal = document.getElementById("videoModal");
+const elModalClose = document.getElementById("modalClose");
+const elModalBackdrop = document.querySelector(".modal-backdrop");
+const elModalTitle = document.getElementById("modalTitle");
+const elModalCategory = document.getElementById("modalCategory");
+const elModalMap = document.getElementById("modalMap");
+const elModalVideo = document.getElementById("modalVideo");
 
 function applyTheme(theme){
     const next = theme === "light" ? "light" : "dark";
@@ -92,9 +99,12 @@ function render(items){
     elEmpty.hidden = true;
     elGrid.innerHTML = items.map(item => {
         const catClass = CATEGORY_COLORS[item.category] || "smoke";
+        const thumbHtml = item.video
+            ? `<img class="thumb-video" src="${item.video}" alt="${item.title}" loading="lazy" />`
+            : `<div class="thumb-placeholder">${CATEGORY_ICONS[item.category] || "🎯"}</div>`;
         return `
         <div class="card" data-id="${item.id}">
-            <div class="thumb-placeholder">${CATEGORY_ICONS[item.category] || "🎯"}</div>
+            ${thumbHtml}
             <div class="card-body">
                 <div class="card-title">${item.title}</div>
                 <div class="card-meta">
@@ -120,6 +130,28 @@ function renderStats(items){
         }).join("");
 }
 
+function openModal(item){
+    elModalTitle.textContent = item.title;
+    elModalCategory.textContent = item.category;
+    elModalCategory.className = `category-badge ${CATEGORY_COLORS[item.category] || "smoke"}`;
+    elModalMap.textContent = item.map;
+
+    if (item.video) {
+        elModalVideo.src = item.video;
+        elModalVideo.hidden = false;
+    } else {
+        elModalVideo.hidden = true;
+    }
+
+    elModal.hidden = false;
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+    elModal.hidden = true;
+    document.body.style.overflow = "";
+}
+
 function bindEvents(){
     elMapFilter.addEventListener("change", ()=>{
         mapFilter = elMapFilter.value;
@@ -138,8 +170,19 @@ function bindEvents(){
     elGrid.addEventListener("click", e => {
         const card = e.target.closest(".card");
         if (card) {
-            location.href = `utility-detail.html?id=${encodeURIComponent(card.dataset.id)}`;
+            const item = allItems.find(i => i.id === card.dataset.id);
+            if (item) openModal(item);
         }
+    });
+
+    elModalClose.addEventListener("click", closeModal);
+    elModalBackdrop.addEventListener("click", closeModal);
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape" && !elModal.hidden) closeModal();
+    });
+
+    elModalVideo.addEventListener("error", ()=>{
+        elModalVideo.alt = "加载失败";
     });
 
     elBackBtn.addEventListener("click", ()=>{

@@ -48,6 +48,10 @@ input:hover,.input:hover{border-color:var(--accent2)}
     width:100%;height:150px;object-fit:cover;display:block;
     background:var(--input-bg)
 }
+.card .thumb-video{
+    width:100%;height:150px;object-fit:cover;display:block;
+    background:var(--input-bg)
+}
 .card .thumb-placeholder{
     width:100%;height:150px;display:flex;align-items:center;justify-content:center;
     background:var(--input-bg);color:var(--muted);font-size:36px
@@ -71,3 +75,35 @@ input:hover,.input:hover{border-color:var(--accent2)}
     margin-top:16px;padding:30px;border:1px solid var(--border);border-radius:12px;
     background:var(--card);color:var(--muted);text-align:center
 }
+
+.modal{
+    position:fixed;inset:0;z-index:1000;display:none;
+    align-items:center;justify-content:center
+}
+.modal:not([hidden]){
+    display:flex
+}
+.modal-backdrop{
+    position:absolute;inset:0;background:rgba(0,0,0,.7)
+}
+.modal-content{
+    position:relative;width:min(700px,94%);max-height:94vh;overflow-y:auto;
+    background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px
+}
+.modal-close{
+    position:absolute;top:12px;right:12px;z-index:10;
+    width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
+    background:var(--input-bg);color:var(--text);font-size:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center
+}
+.modal-close:hover{border-color:var(--accent2)}
+.modal-head{margin-bottom:14px;padding-right:36px}
+.modal-head h2{font-size:18px;margin:0 0 6px}
+.modal-head .detail-meta{display:flex;gap:8px;align-items:center}
+.modal-head .category-badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;font-weight:600;border:1px solid transparent}
+.modal-head .category-badge.smoke{background:var(--smoke);border-color:rgba(140,170,220,.4);color:#8caadc}
+.modal-head .category-badge.flash{background:var(--flash);border-color:rgba(255,200,60,.4);color:#ffc83c}
+.modal-head .category-badge.molotov{background:var(--molotov);border-color:rgba(255,100,50,.4);color:#ff6432}
+.modal-head .category-badge.he{background:var(--he);border-color:rgba(100,200,80,.4);color:#64c850}
+.modal-head .map-badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--input-bg);color:var(--muted);border:1px solid var(--border)}
+.modal-video{width:100%;display:block;border-radius:10px;background:var(--input-bg)}

@@ -5,24 +5,28 @@
       "title": "T 中门烟",
       "map": "Dust2",
       "category": "烟雾弹",
-      "gif": "assets/utility/T-Center-Gate-Smoke.gif",
-      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+      "video": "assets/utility/T-Center-Gate-Smoke.mp4"
     },
     {
       "id": "dust2-b-gate-smoke-t",
       "title": "T B门烟",
       "map": "Dust2",
       "category": "烟雾弹",
-      "gif": "assets/utility/T-B-Gate-Smoke.gif",
-      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+      "video": "assets/utility/T-B-Gate-Smoke.mp4"
     },
         {
       "id": "dust2-a-blue-car-fire-t",
       "title": "T 蓝车火",
       "map": "Dust2",
       "category": "燃烧弹",
-      "gif": "assets/utility/T-A-Blue-Car-Fire.gif",
-      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+      "video": "assets/utility/T-A-Blue-Car-Fire.mp4"
+    },
+    {
+      "id": "dust2-a-gate-to-small-smoke-t",
+      "title": "T A门扔A小烟",
+      "map": "Dust2",
+      "category": "烟雾弹",
+      "video": "assets/utility/T-A-Blue-Car-Fire.mp4"
     }
   ]
 }
