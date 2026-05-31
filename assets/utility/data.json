@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "dust2-center-gate-smoke-t",
+      "title": "T 中门烟",
+      "map": "Dust2",
+      "category": "烟雾弹",
+      "gif": "assets/utility/T-Center-Gate-Smoke.gif",
+      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+    },
+    {
+      "id": "dust2-b-gate-smoke-t",
+      "title": "T B门烟",
+      "map": "Dust2",
+      "category": "烟雾弹",
+      "gif": "assets/utility/T-B-Gate-Smoke.gif",
+      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+    }
+  ]
+}

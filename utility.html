@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSGO 道具点位</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="assets/css/utility.css" />
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div>
+            <h1>💣 道具点位</h1>
+            <p class="sub">CS2 常用道具投掷点位参考：烟雾弹、闪光弹、燃烧弹等。</p>
+        </div>
+        <div class="actions">
+            <div class="filter-group">
+                <select id="mapFilter" class="input">
+                    <option value="">全部地图</option>
+                </select>
+                <select id="categoryFilter" class="input">
+                    <option value="">全部类型</option>
+                </select>
+            </div>
+            <button id="backBtn" class="btn" type="button">返回高光页</button>
+        </div>
+    </div>
+    <div id="statsBar" class="stats-bar"></div>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" hidden>暂无道具数据。</div>
+</div>
+<script src="assets/js/utility.js"></script>
+</body>
+</html>
