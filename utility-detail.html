@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>道具详情</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="assets/css/utility-detail.css" />
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <h1 id="pageTitle">道具详情</h1>
+        <div class="actions">
+            <button id="backBtn" class="btn" type="button">返回列表</button>
+        </div>
+    </div>
+    <div id="detail" class="detail" hidden>
+        <div class="detail-head">
+            <h2 id="detailTitle"></h2>
+            <div class="detail-meta">
+                <span id="detailCategory" class="category-badge"></span>
+                <span id="detailMap" class="map-badge"></span>
+            </div>
+        </div>
+        <div class="gif-wrap">
+            <img id="detailGif" class="gif-img" alt="" />
+        </div>
+        <div id="effectWrap" class="effect-wrap" hidden>
+            <h3 class="effect-label">效果图</h3>
+            <img id="detailEffect" class="effect-img" alt="" />
+        </div>
+    </div>
+    <div id="empty" class="empty" hidden>未找到该道具点位。</div>
+</div>
+<script src="assets/js/utility-detail.js"></script>
+</body>
+</html>

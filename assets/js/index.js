@@ -629,6 +629,10 @@ const DEFAULT_VIDEOS = [];
             location.href = "leaderboard.html";
         });
 
+        document.getElementById("utilityBtn").addEventListener("click", ()=>{
+            location.href = "utility.html";
+        });
+
         elChangelogBtn.addEventListener("click", openChangelog);
         elChangelogCloseBtn.addEventListener("click", closeChangelog);
         elChangelogMask.addEventListener("click", (e)=>{
