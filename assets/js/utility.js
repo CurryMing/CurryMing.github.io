@@ -26,6 +26,13 @@ const CATEGORY_COLORS = {
     "手雷": "he"
 };
 
+const CATEGORY_ICONS = {
+    "烟雾弹": "💨",
+    "闪光弹": "💥",
+    "燃烧弹": "🔥",
+    "手雷": "💣"
+};
+
 let allItems = [];
 let mapFilter = "";
 let categoryFilter = "";
@@ -87,7 +94,7 @@ function render(items){
         const catClass = CATEGORY_COLORS[item.category] || "smoke";
         return `
         <div class="card" data-id="${item.id}">
-            <div class="thumb-placeholder">🎯</div>
+            <div class="thumb-placeholder">${CATEGORY_ICONS[item.category] || "🎯"}</div>
             <div class="card-body">
                 <div class="card-title">${item.title}</div>
                 <div class="card-meta">
