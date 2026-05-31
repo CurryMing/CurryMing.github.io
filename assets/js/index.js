@@ -7,8 +7,17 @@ const DEFAULT_VIDEOS = [];
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
     const COMBO_WINDOW_MS = 1400;
-    const APP_VERSION = "v1.15.0";
+    const APP_VERSION = "v1.16.0";
     const CHANGELOG = [
+        {
+            version: "v1.16.0",
+            date: "2026-05-31",
+            changes: [
+                "新增道具点位页面（utility.html），支持按地图/类型筛选",
+                "卡片封面自动播放 MP4 投掷教学视频，点击弹出大图预览",
+                "主页工具栏增加“道具点位”导航按钮"
+            ]
+        },
         {
             version: "v1.15.0",
             date: "2026-05-27",
