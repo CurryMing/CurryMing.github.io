@@ -15,6 +15,14 @@
       "category": "烟雾弹",
       "gif": "assets/utility/T-B-Gate-Smoke.gif",
       "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
+    },
+        {
+      "id": "dust2-a-blue-car-fire-t",
+      "title": "T 蓝车火",
+      "map": "Dust2",
+      "category": "燃烧弹",
+      "gif": "assets/utility/T-A-Blue-Car-Fire.gif",
+      "effect": "assets/utility/T-Center-Gate-Smoke-effect.jpg"
     }
   ]
 }
