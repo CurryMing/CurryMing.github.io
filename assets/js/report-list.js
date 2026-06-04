@@ -74,7 +74,7 @@
             .sort((a, b) => {
                 const byDate = b.date.localeCompare(a.date);
                 if (byDate !== 0) return byDate;
-                return a.sortOrder - b.sortOrder;
+                return b.sortOrder - a.sortOrder;
             });
     }
 
