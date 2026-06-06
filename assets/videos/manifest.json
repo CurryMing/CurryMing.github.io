@@ -1,7 +1,18 @@
 {
   "videos": [
     {
-      "id": "local-001",
+      "id": "local-009",
+      "title": "Do迪 沙二四杀 动地操作",
+      "map": "dust2",
+      "date": "2026-05-29",
+      "tags": ["沙二", "四杀"],
+      "type": "local",
+      "src": "602c4a79-19e90070b53.mp4",
+      "poster": "highlight1.png",
+      "baseLikes": 999999
+    },
+    {
+      "id": "local-008",
       "title": "牛头人 沙二五杀 震天操作",
       "map": "dust2",
       "date": "2026-05-27",
