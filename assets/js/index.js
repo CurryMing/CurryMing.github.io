@@ -6,9 +6,18 @@ const DEFAULT_VIDEOS = [];
     const LS_LIKED = "csgo-liked";
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
+    const MUSIC_DAY = "music/宝石Gem+-+枪火_523157446.mp3";
+    const MUSIC_NIGHT = "music/林冻 - Echoes (往日回响)_562576215.mp3";
     const COMBO_WINDOW_MS = 1400;
     const APP_VERSION = "v1.16.0";
     const CHANGELOG = [
+        {
+            version: "v1.17.0",
+            date: "2026-06-07",
+            changes: [
+                "新增背景音乐功能：白天模式播放 day.mp3，夜晚模式播放 night.mp3，切换主题自动切换音乐"
+            ]
+        },
         {
             version: "v1.16.0",
             date: "2026-05-31",
@@ -94,6 +103,10 @@ const DEFAULT_VIDEOS = [];
     const elChangelogMask = document.getElementById("changelogMask");
     const elChangelogList = document.getElementById("changelogList");
     const elChangelogCloseBtn = document.getElementById("changelogCloseBtn");
+    let audioDay = null;
+    let audioNight = null;
+    let musicStarted = false;
+    let currentMusicTheme = null;
 
     function applyTheme(theme){
         const nextTheme = theme === "light" ? "light" : "dark";
@@ -105,6 +118,7 @@ const DEFAULT_VIDEOS = [];
             elThemeBtn.setAttribute("aria-label", toLight ? "切换为白天模式" : "切换为黑夜模式");
             elThemeBtn.title = toLight ? "切换为白天模式" : "切换为黑夜模式";
         }
+        switchMusic(nextTheme);
     }
 
     function initTheme(){
@@ -577,6 +591,43 @@ const DEFAULT_VIDEOS = [];
         `).join("");
     }
 
+    function initMusic(){
+        audioDay = new Audio(MUSIC_DAY);
+        audioNight = new Audio(MUSIC_NIGHT);
+        audioDay.loop = true;
+        audioNight.loop = true;
+        audioDay.volume = 0.5;
+        audioNight.volume = 0.5;
+        function startOnInteraction(){
+            if (musicStarted) return;
+            musicStarted = true;
+            document.removeEventListener("click", startOnInteraction);
+            document.removeEventListener("touchstart", startOnInteraction);
+            switchMusic(getCurrentTheme());
+        }
+        document.addEventListener("click", startOnInteraction);
+        document.addEventListener("touchstart", startOnInteraction);
+    }
+
+    function getCurrentTheme(){
+        return document.documentElement.getAttribute("data-theme") || "dark";
+    }
+
+    function switchMusic(theme){
+        if (!musicStarted) return;
+        if (theme === currentMusicTheme) return;
+        currentMusicTheme = theme;
+        if (theme === "light") {
+            audioNight.pause();
+            audioNight.currentTime = 0;
+            audioDay.play().catch(()=>{});
+        } else {
+            audioDay.pause();
+            audioDay.currentTime = 0;
+            audioNight.play().catch(()=>{});
+        }
+    }
+
     function openChangelog(){
         if (!elChangelogMask) return;
         elChangelogMask.classList.add("show");
@@ -710,6 +761,7 @@ const DEFAULT_VIDEOS = [];
 
     async function init(){
         initTheme();
+        initMusic();
         renderVersionInfo();
         renderChangelog();
         bindEvents();
