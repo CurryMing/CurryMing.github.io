@@ -636,7 +636,8 @@ const DEFAULT_VIDEOS = [];
 
     function updateMusicBtn(){
         if (!elMusicBtn) return;
-        elMusicBtn.textContent = musicEnabled ? "🎵" : "🔇";
+        elMusicBtn.textContent = "🎵";
+        elMusicBtn.classList.toggle("off", !musicEnabled);
     }
 
     function toggleMusic(){
