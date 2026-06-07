@@ -6,6 +6,7 @@ const DEFAULT_VIDEOS = [];
     const LS_LIKED = "csgo-liked";
     const LS_FAVS = "csgo-favs";
     const LS_THEME = "csgo-theme";
+    const LS_MUSIC = "csgo-music";
     const MUSIC_DAY = "music/宝石Gem+-+枪火_523157446.mp3";
     const MUSIC_NIGHT = "music/林冻 - Echoes (往日回响)_562576215.mp3";
     const COMBO_WINDOW_MS = 1400;
@@ -15,7 +16,7 @@ const DEFAULT_VIDEOS = [];
             version: "v1.17.0",
             date: "2026-06-07",
             changes: [
-                "新增背景音乐功能：白天模式播放 day.mp3，夜晚模式播放 night.mp3，切换主题自动切换音乐"
+                "新增背景音乐功能：白天播放 day.mp3，夜晚播放 night.mp3，工具栏增加音乐开关按钮（默认关闭，支持状态保持）"
             ]
         },
         {
@@ -99,6 +100,7 @@ const DEFAULT_VIDEOS = [];
     const elReportPageBtn = document.getElementById("reportPageBtn");
     const elChangelogBtn = document.getElementById("changelogBtn");
     const elThemeBtn = document.getElementById("themeBtn");
+    const elMusicBtn = document.getElementById("musicBtn");
     const elFooterVersion = document.getElementById("footerVersion");
     const elChangelogMask = document.getElementById("changelogMask");
     const elChangelogList = document.getElementById("changelogList");
@@ -106,6 +108,7 @@ const DEFAULT_VIDEOS = [];
     let audioDay = null;
     let audioNight = null;
     let musicStarted = false;
+    let musicEnabled = false;
     let currentMusicTheme = null;
 
     function applyTheme(theme){
@@ -592,21 +595,24 @@ const DEFAULT_VIDEOS = [];
     }
 
     function initMusic(){
+        musicEnabled = localStorage.getItem(LS_MUSIC) === "1";
         audioDay = new Audio(MUSIC_DAY);
         audioNight = new Audio(MUSIC_NIGHT);
         audioDay.loop = true;
         audioNight.loop = true;
         audioDay.volume = 0.5;
         audioNight.volume = 0.5;
-        function startOnInteraction(){
+        updateMusicBtn();
+        if (!musicEnabled) return;
+        function autoStart(){
             if (musicStarted) return;
+            document.removeEventListener("click", autoStart);
+            document.removeEventListener("touchstart", autoStart);
             musicStarted = true;
-            document.removeEventListener("click", startOnInteraction);
-            document.removeEventListener("touchstart", startOnInteraction);
             switchMusic(getCurrentTheme());
         }
-        document.addEventListener("click", startOnInteraction);
-        document.addEventListener("touchstart", startOnInteraction);
+        document.addEventListener("click", autoStart);
+        document.addEventListener("touchstart", autoStart);
     }
 
     function getCurrentTheme(){
@@ -614,7 +620,7 @@ const DEFAULT_VIDEOS = [];
     }
 
     function switchMusic(theme){
-        if (!musicStarted) return;
+        if (!musicStarted && !musicEnabled) return;
         if (theme === currentMusicTheme) return;
         currentMusicTheme = theme;
         if (theme === "light") {
@@ -626,6 +632,28 @@ const DEFAULT_VIDEOS = [];
             audioDay.currentTime = 0;
             audioNight.play().catch(()=>{});
         }
+    }
+
+    function updateMusicBtn(){
+        if (!elMusicBtn) return;
+        elMusicBtn.textContent = musicEnabled ? "🎵" : "🔇";
+    }
+
+    function toggleMusic(){
+        musicEnabled = !musicEnabled;
+        localStorage.setItem(LS_MUSIC, musicEnabled ? "1" : "0");
+        if (musicEnabled) {
+            musicStarted = true;
+            switchMusic(getCurrentTheme());
+        } else {
+            audioDay.pause();
+            audioDay.currentTime = 0;
+            audioNight.pause();
+            audioNight.currentTime = 0;
+            musicStarted = false;
+            currentMusicTheme = null;
+        }
+        updateMusicBtn();
     }
 
     function openChangelog(){
@@ -705,6 +733,8 @@ const DEFAULT_VIDEOS = [];
             applyTheme(next);
             localStorage.setItem(LS_THEME, next);
         });
+
+        if (elMusicBtn) elMusicBtn.addEventListener("click", toggleMusic);
 
         document.addEventListener("click", (e)=>{
             const btn = e.target.closest("[data-action]");
