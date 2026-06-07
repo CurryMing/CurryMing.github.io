@@ -20,10 +20,10 @@
             --map-topline:linear-gradient(90deg,#ffcf88 0%,#f5a247 45%,#cc7624 100%);
         }
         *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Microsoft YaHei,sans-serif}
-        .wrap{width:min(1200px,92%);margin:0 auto;padding:20px 0 40px}
+        .wrap{width:min(1200px,92%);margin:0 auto;padding:0 0 40px}
         .hero{
             margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
-            padding:22px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+            padding:22px 0;border-bottom:1px solid var(--border);
             background:linear-gradient(120deg,rgba(255,255,255,.04),rgba(255,255,255,.01) 42%),var(--card)
         }
         .hero-inner{width:min(1200px,92%);margin:0 auto}
@@ -141,6 +141,14 @@
         .sort-option.active{background:rgba(0,212,255,.12);color:var(--active-text)}
         .theme-icon-btn{width:38px;padding:0;display:flex;align-items:center;justify-content:center}
         .theme-icon{font-size:16px;line-height:1}
+        .music-float-btn{
+            position:fixed;top:14px;right:14px;z-index:1500;
+            width:38px;height:38px;border-radius:50%;
+            border:1px solid var(--border);background:var(--card);color:var(--text);
+            font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 2px 12px rgba(0,0,0,.18);transition:border-color .15s,background .15s
+        }
+        .music-float-btn:hover{border-color:var(--accent2)}
         #favOnlyBtn{
             transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .14s ease;
         }
