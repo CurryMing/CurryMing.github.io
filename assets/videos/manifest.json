@@ -1,6 +1,17 @@
 {
   "videos": [
     {
+      "id": "local-010",
+      "title": "凉薄 沙二五杀 基本操作",
+      "map": "dust2",
+      "date": "2026-06-05",
+      "tags": ["沙二", "五杀"],
+      "type": "local",
+      "src": "dong_5skill_20260605.mp4",
+      "poster": "dong_5skill_20260605.mp4.jpg",
+      "baseLikes": 999999
+    },
+    {
       "id": "local-009",
       "title": "Do迪 沙二四杀 动地操作",
       "map": "dust2",
