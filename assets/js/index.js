@@ -16,7 +16,8 @@ const DEFAULT_VIDEOS = [];
             version: "v1.17.0",
             date: "2026-06-07",
             changes: [
-                "新增背景音乐功能：白天播放 day.mp3，夜晚播放 night.mp3，工具栏增加音乐开关按钮（默认关闭，支持状态保持）"
+                "新增背景音乐功能：白天播放 day.mp3，夜晚播放 night.mp3，工具栏增加音乐开关按钮（默认关闭，支持状态保持）",
+                "新增打赏功能：打赏排行榜，突显榜一大哥，支持扫码打赏"
             ]
         },
         {
@@ -105,6 +106,10 @@ const DEFAULT_VIDEOS = [];
     const elChangelogMask = document.getElementById("changelogMask");
     const elChangelogList = document.getElementById("changelogList");
     const elChangelogCloseBtn = document.getElementById("changelogCloseBtn");
+    const elDonateMask = document.getElementById("donateMask");
+    const elDonateCloseBtn = document.getElementById("donateCloseBtn");
+    const elDonateRank = document.getElementById("donateRank");
+    const elDonateBtn = document.getElementById("donateBtn");
     let audioDay = null;
     let audioNight = null;
     let musicStarted = false;
@@ -669,6 +674,36 @@ const DEFAULT_VIDEOS = [];
         elChangelogMask.setAttribute("aria-hidden", "true");
     }
 
+    function openDonate(){
+        if (!elDonateMask) return;
+        renderDonateRank();
+        elDonateMask.classList.add("show");
+        elDonateMask.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDonate(){
+        if (!elDonateMask) return;
+        elDonateMask.classList.remove("show");
+        elDonateMask.setAttribute("aria-hidden", "true");
+    }
+
+    function renderDonateRank(){
+        if (!elDonateRank) return;
+        const list = (window.DONATIONS || []).slice();
+        if (!list.length) {
+            elDonateRank.innerHTML = '<div class="donate-rank-empty">暂无打赏记录，快来当榜一大哥吧 🏆</div>';
+            return;
+        }
+        list.sort((a,b)=>b.amount - a.amount);
+        elDonateRank.innerHTML = list.map((item, i) => `
+            <div class="donate-rank-item ${i === 0 ? "top1" : ""}">
+                <span class="rank-num">${i === 0 ? "👑" : `#${i + 1}`}</span>
+                <span class="rank-name">${item.name}</span>
+                <span class="rank-amt">¥${Number(item.amount).toFixed(2)}</span>
+            </div>
+        `).join("");
+    }
+
     function bindEvents(){
         function updateFavOnlyBtnState(){
             elFavOnlyBtn.textContent = "收藏夹";
@@ -702,6 +737,7 @@ const DEFAULT_VIDEOS = [];
         document.addEventListener("keydown", (e)=>{
             if (e.key === "Escape") closeSortMenu();
             if (e.key === "Escape") closeChangelog();
+            if (e.key === "Escape") closeDonate();
         });
 
         elFavOnlyBtn.addEventListener("click", ()=>{
@@ -736,6 +772,12 @@ const DEFAULT_VIDEOS = [];
         });
 
         if (elMusicBtn) elMusicBtn.addEventListener("click", toggleMusic);
+
+        if (elDonateBtn) elDonateBtn.addEventListener("click", openDonate);
+        if (elDonateCloseBtn) elDonateCloseBtn.addEventListener("click", closeDonate);
+        if (elDonateMask) elDonateMask.addEventListener("click", e => {
+            if (e.target === elDonateMask) closeDonate();
+        });
 
         document.addEventListener("click", (e)=>{
             const btn = e.target.closest("[data-action]");

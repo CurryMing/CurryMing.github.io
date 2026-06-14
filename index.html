@@ -78,6 +78,7 @@
         <button id="themeBtn" class="btn theme-icon-btn" aria-label="切换主题" title="切换主题">
             <span class="theme-icon" aria-hidden="true">🌙</span>
         </button>
+        <button id="donateBtn" class="btn" type="button">🎁 打赏</button>
     </div>
 
     <div id="app"></div>
@@ -97,9 +98,29 @@
     </div>
 </div>
 
+<div id="donateMask" class="changelog-mask" aria-hidden="true">
+    <div class="changelog-panel donate-panel" role="dialog" aria-modal="true">
+        <div class="changelog-head">
+            <h2 class="changelog-title">🎁 打赏支持</h2>
+            <button id="donateCloseBtn" class="btn changelog-close" type="button">关闭</button>
+        </div>
+        <div class="donate-body">
+            <div class="donate-qr-wrap">
+                <img id="donateQr" class="donate-qr" src="assets/donate/qr.png" alt="打赏二维码" />
+                <p class="donate-hint">扫码打赏，感谢支持！</p>
+            </div>
+            <div class="donate-rank-wrap">
+                <h3 class="donate-rank-title">🏆 打赏排行榜</h3>
+                <div id="donateRank" class="donate-rank"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <button id="musicBtn" class="music-float-btn" type="button">🔇</button>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="assets/donate/data.js"></script>
 <script src="assets/js/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
