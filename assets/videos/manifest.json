@@ -1,6 +1,50 @@
 {
   "videos": [
     {
+      "id": "local-014",
+      "title": "牛头人 暴力五杀 封人操作",
+      "map": "dust2",
+      "date": "2026-06-17",
+      "tags": ["沙二", "五杀"],
+      "type": "local",
+      "src": "niuren_5kill.mp4",
+      "poster": "video2.jpg",
+      "baseLikes": 999999
+    },
+    {
+      "id": "local-013",
+      "title": "终不似少年游 一局三次四杀P3",
+      "map": "dust2",
+      "date": "2026-06-17",
+      "tags": ["沙二", "四杀", "少年操作"],
+      "type": "local",
+      "src": "xing_4kill_3.mp4",
+      "poster": "xing_4kill.jpg",
+      "baseLikes": 999999
+    },
+        {
+      "id": "local-012",
+      "title": "终不似少年游 一局三次四杀P2",
+      "map": "dust2",
+      "date": "2026-06-17",
+      "tags": ["沙二", "四杀", "少年操作"],
+      "type": "local",
+      "src": "xing_4kill_2.mp4",
+      "poster": "xing_4kill.jpg",
+      "baseLikes": 999999
+    },
+        {
+      "id": "local-011",
+      "title": "终不似少年游 一局三次四杀P1",
+      "map": "dust2",
+      "date": "2026-06-17",
+      "tags": ["沙二", "四杀", "少年操作"],
+      "type": "local",
+      "src": "xing_4kill_1.mp4",
+      "poster": "xing_4kill.jpg",
+      "baseLikes": 999999
+    },
+    {
       "id": "local-010",
       "title": "凉薄 沙二五杀 基本操作",
       "map": "dust2",
@@ -8,7 +52,7 @@
       "tags": ["沙二", "五杀"],
       "type": "local",
       "src": "dong_5skill_20260605.mp4",
-      "poster": "dong_5skill_20260605.mp4.jpg",
+      "poster": "dong_5skill_20260605.jpg",
       "baseLikes": 999999
     },
     {
