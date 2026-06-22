@@ -1,5 +1,16 @@
 {
   "videos": [
+      {
+      "id": "local-017",
+      "title": "牛头人 连狙穿箱+盲狙 运气操作",
+      "map": "dust2",
+      "date": "2026-06-21",
+      "tags": ["沙二", "不可思议击杀"],
+      "type": "local",
+      "src": "niuren_lianju2kill.mp4",
+      "poster": "video2.png",
+      "baseLikes": 75637291
+    },
     {
       "id": "local-016",
       "title": "终不似少年游 快速四杀 利用地形操作",
@@ -8,7 +19,7 @@
       "tags": ["沙二", "四杀"],
       "type": "local",
       "src": "xing_0621_4kill.mp4",
-      "poster": "xing_4kill.png",
+      "poster": "xing_4kill.jpg",
       "baseLikes": 100032938
     },
     {
