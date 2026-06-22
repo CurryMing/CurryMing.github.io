@@ -1,6 +1,28 @@
 {
   "videos": [
     {
+      "id": "local-016",
+      "title": "终不似少年游 快速四杀 利用地形操作",
+      "map": "dust2",
+      "date": "2026-06-21",
+      "tags": ["沙二", "四杀"],
+      "type": "local",
+      "src": "xing_0621_4kill.mp4",
+      "poster": "xing_4kill.png",
+      "baseLikes": 100032938
+    },
+    {
+      "id": "local-015",
+      "title": "蜡笔小新 沉着四杀 AK战神",
+      "map": "dust2",
+      "date": "2026-06-21",
+      "tags": ["沙二", "四杀"],
+      "type": "local",
+      "src": "xin_0621_4kill.mp4",
+      "poster": "xin.jpg",
+      "baseLikes": 18284718561
+    },
+    {
       "id": "local-014",
       "title": "牛头人 暴力五杀 封人操作",
       "map": "dust2",
