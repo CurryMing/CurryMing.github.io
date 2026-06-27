@@ -1,5 +1,27 @@
 {
   "videos": [
+    {
+      "id": "local-019",
+      "title": "Do迪 四杀 基本操作",
+      "map": "dust2",
+      "date": "2026-06-24",
+      "tags": ["沙二", "四杀"],
+      "type": "local",
+      "src": "dodi_4kill_0624.mp4",
+      "poster": "dodi_4kill.jpeg",
+      "baseLikes": 0
+    },
+    {
+      "id": "local-018",
+      "title": "Do迪 反应超快 切刀砍瓜",
+      "map": "dust2",
+      "date": "2026-06-24",
+      "tags": ["沙二", "剑圣"],
+      "type": "local",
+      "src": "dodi_dao_0624.mp4",
+      "poster": "dao.jpeg",
+      "baseLikes": 0
+    },
       {
       "id": "local-017",
       "title": "牛头人 搁箱猛抽似陀螺 骑脸盲狙赛AK",
@@ -96,7 +118,7 @@
       "tags": ["沙二", "四杀"],
       "type": "local",
       "src": "602c4a79-19e90070b53.mp4",
-      "poster": "highlight4.jpeg",
+      "poster": "dodi_4kill.jpeg",
       "baseLikes": 999999
     },
     {
@@ -118,7 +140,7 @@
       "tags": ["沙二", "四杀"],
       "type": "local",
       "src": "highlight1.mp4",
-      "poster": "highlight4.jpeg",
+      "poster": "dodi_4kill.jpeg",
       "baseLikes": 999
     },
     {
@@ -162,7 +184,7 @@
       "tags": ["沙二", "剑圣"],
       "type": "local",
       "src": "533a066f-19d8faa56fa.mp4",
-      "poster": "highlight3.jpeg",
+      "poster": "dao.jpeg",
       "baseLikes": 88
     },
     {
@@ -173,7 +195,7 @@
       "tags": ["沙二", "剑圣"],
       "type": "local",
       "src": "47548044-19db89d6ac3.mp4",
-      "poster": "highlight3.jpeg",
+      "poster": "dao.jpeg",
       "baseLikes": 288
     },
     {
@@ -184,7 +206,7 @@
       "tags": ["沙二", "四杀", "USP"],
       "type": "local",
       "src": "2b504f27-19dd4cc7080.mp4",
-      "poster": "highlight4.jpeg",
+      "poster": "dodi_4kill.jpeg",
       "baseLikes": 361
     }
   ]
