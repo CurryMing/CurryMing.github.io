@@ -1,6 +1,28 @@
 {
   "videos": [
     {
+      "id": "local-021",
+      "title": "蜡笔小新 四杀 同牛操作",
+      "map": "dust2",
+      "date": "2026-06-27",
+      "tags": ["沙二", "四杀"],
+      "type": "local",
+      "src": "xin_lianju_4kill0627.mp4",
+      "poster": "xin.jpg",
+      "baseLikes": 996
+    },
+    {
+      "id": "local-020",
+      "title": "终不似少年游 五杀 震牛操作",
+      "map": "dust2",
+      "date": "2026-06-27",
+      "tags": ["沙二", "五杀"],
+      "type": "local",
+      "src": "xing_5kill0627.mp4",
+      "poster": "xing.jpg",
+      "baseLikes": 1097
+    },
+    {
       "id": "local-019",
       "title": "Do迪 四杀 基本操作",
       "map": "dust2",
@@ -41,7 +63,7 @@
       "tags": ["沙二", "四杀"],
       "type": "local",
       "src": "xing_0621_4kill.mp4",
-      "poster": "xing_4kill.jpg",
+      "poster": "xing.jpg",
       "baseLikes": 100032938
     },
     {
