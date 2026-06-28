@@ -107,9 +107,11 @@ const DEFAULT_VIDEOS = [];
     const elChangelogList = document.getElementById("changelogList");
     const elChangelogCloseBtn = document.getElementById("changelogCloseBtn");
     const elDonateMask = document.getElementById("donateMask");
-    const elDonateCloseBtn = document.getElementById("donateCloseBtn");
     const elDonateRank = document.getElementById("donateRank");
     const elDonateBtn = document.getElementById("donateBtn");
+    const elDonateQrBtn = document.getElementById("donateQrBtn");
+    const elDonateQrWrap = document.getElementById("donateQrWrap");
+    const elDonateQrClose = document.getElementById("donateQrClose");
     let audioDay = null;
     let audioNight = null;
     let musicStarted = false;
@@ -701,16 +703,16 @@ const DEFAULT_VIDEOS = [];
 
     function renderDonateList(list){
         if (!Array.isArray(list)) list = [];
-        if (!list.length) {
-            elDonateRank.innerHTML = '<div class="donate-rank-empty">暂无打赏记录，快来当榜一大哥吧 🏆</div>';
-            return;
-        }
         list.sort((a,b)=>b.amount - a.amount);
-        elDonateRank.innerHTML = list.map((item, i) => `
-            <div class="donate-rank-item ${i === 0 ? "top1" : ""}">
-                <span class="rank-num">${i === 0 ? "👑" : `#${i + 1}`}</span>
+        const podiums = [];
+        for (let i = 0; i < 3; i++) {
+            podiums.push(list[i] ? list[i] : { name: "虚位以待", amount: null });
+        }
+        elDonateRank.innerHTML = podiums.map((item, i) => `
+            <div class="donate-rank-item ${i === 0 ? "top1" : i === 1 ? "top2" : "top3"}">
+                <span class="rank-num">${i === 0 ? "👑" : i === 1 ? "🥈" : "🥉"}</span>
                 <span class="rank-name">${item.name}</span>
-                <span class="rank-amt">¥${Number(item.amount).toFixed(2)}</span>
+                <span class="rank-amt">${item.amount != null ? "¥" + Number(item.amount).toFixed(2) : "--"}</span>
             </div>
         `).join("");
     }
@@ -785,9 +787,18 @@ const DEFAULT_VIDEOS = [];
         if (elMusicBtn) elMusicBtn.addEventListener("click", toggleMusic);
 
         if (elDonateBtn) elDonateBtn.addEventListener("click", openDonate);
-        if (elDonateCloseBtn) elDonateCloseBtn.addEventListener("click", closeDonate);
         if (elDonateMask) elDonateMask.addEventListener("click", e => {
             if (e.target === elDonateMask) closeDonate();
+        });
+
+        if (elDonateQrBtn) elDonateQrBtn.addEventListener("click", ()=>{
+            if (elDonateQrWrap) elDonateQrWrap.hidden = false;
+        });
+        if (elDonateQrClose) elDonateQrClose.addEventListener("click", ()=>{
+            if (elDonateQrWrap) elDonateQrWrap.hidden = true;
+        });
+        if (elDonateQrWrap) elDonateQrWrap.addEventListener("click", e => {
+            if (e.target === elDonateQrWrap) elDonateQrWrap.hidden = true;
         });
 
         document.addEventListener("click", (e)=>{
