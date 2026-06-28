@@ -167,6 +167,7 @@
         .changelog-panel{width:min(760px,96vw);max-height:82vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
         .changelog-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
         .changelog-title{margin:0;font-size:18px}
+        .donate-panel .changelog-title{font-size:24px}
         .changelog-close{height:32px;padding:0 10px}
         .changelog-list{margin-top:10px;display:flex;flex-direction:column;gap:10px}
         .changelog-item{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--input-bg)}
@@ -221,48 +222,57 @@
             text-decoration:underline;text-underline-offset:2px;border-radius:0;font-size:12px
         }
         .footer-version-btn:hover{color:var(--text);border:none;transform:none}
-        .donate-panel{max-width:540px}
-        .donate-body{margin-top:8px}
-        .donate-rank{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+        .donate-panel{max-width:560px}
+        .donate-body{margin-top:12px}
+        .donate-rank{display:flex;flex-direction:column;gap:10px}
         .donate-rank-item{
-            display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
+            display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;
             background:var(--card);font-size:14px;border:1px solid var(--border);
-            transition:transform .2s,box-shadow .2s
+            transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden
         }
-        .donate-rank-item .rank-num{width:28px;text-align:center;font-weight:800;font-size:14px;color:var(--muted)}
-        .donate-rank-item .rank-name{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f0f4fa}
+        .donate-rank-item .rank-avatar{
+            width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+            font-size:24px;flex-shrink:0
+        }
+        .donate-rank-item .rank-info{flex:1;display:flex;flex-direction:column;gap:2px}
+        .donate-rank-item .rank-name{font-weight:700;font-size:15px;color:#f0f4fa}
         :root[data-theme="light"] .donate-rank-item .rank-name{color:#1a2433}
-        .donate-rank-item .rank-amt{font-weight:800;color:var(--accent2);font-size:15px}
+        .donate-rank-item .rank-label{font-size:12px;color:#8a9bb0;letter-spacing:.3px}
+        :root[data-theme="light"] .donate-rank-item .rank-label{color:#6a7b90}
+        .donate-rank-item .rank-amt{font-weight:800;font-size:18px;color:var(--accent2);text-align:right;flex-shrink:0}
 
         .donate-rank-item.top1{
-            padding:18px 20px;border-radius:16px;margin-bottom:2px;
-            background:linear-gradient(135deg,rgba(255,215,0,.18),rgba(255,160,0,.08));
-            border:1.5px solid rgba(255,200,0,.45);
-            box-shadow:0 6px 30px rgba(255,200,0,.1),inset 0 1px 0 rgba(255,255,255,.08)
+            padding:20px 22px;border-radius:18px;margin-bottom:4px;
+            background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,160,0,.06));
+            border:1.5px solid rgba(255,200,0,.4);
+            box-shadow:0 8px 32px rgba(255,200,0,.1)
         }
-        .donate-rank-item.top1 .rank-num{font-size:26px;color:#ffd700}
-        .donate-rank-item.top1 .rank-name{font-size:20px;font-weight:900;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.25)}
-        .donate-rank-item.top1 .rank-amt{font-size:22px;color:#ff6a00;text-shadow:0 0 16px rgba(255,106,0,.35)}
+        .donate-rank-item.top1::before{
+            content:"";position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,transparent,#ffd700,transparent)
+        }
+        .donate-rank-item.top1 .rank-avatar{background:none;box-shadow:none;width:44px;height:44px;font-size:24px}
+        .donate-rank-item.top1 .rank-name{font-size:16px;font-weight:800;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.2)}
+        .donate-rank-item.top1 .rank-amt{font-size:19px;color:#ff6a00;text-shadow:0 0 16px rgba(255,106,0,.3)}
+        .donate-rank-item.top1 .rank-label{font-size:13px;color:#d4b000;font-weight:600}
 
         .donate-rank-item.top2{
-            padding:14px 18px;border-radius:14px;
-            background:linear-gradient(135deg,rgba(180,200,220,.12),rgba(150,170,200,.06));
-            border:1px solid rgba(180,200,220,.3);
-            box-shadow:0 4px 20px rgba(150,170,200,.06)
+            padding:16px 20px;border-radius:16px;
+            background:linear-gradient(135deg,rgba(180,200,220,.1),rgba(150,170,200,.05));
+            border:1px solid rgba(180,200,220,.25)
         }
-        .donate-rank-item.top2 .rank-num{font-size:18px;color:#a0b8d0}
-        .donate-rank-item.top2 .rank-name{font-size:17px;font-weight:800}
-        .donate-rank-item.top2 .rank-amt{font-size:17px}
+        .donate-rank-item.top2 .rank-avatar{background:none;box-shadow:none;width:44px;height:44px;font-size:24px}
+        .donate-rank-item.top2 .rank-name{font-size:16px;font-weight:800}
+        .donate-rank-item.top2 .rank-amt{font-size:19px}
 
         .donate-rank-item.top3{
-            padding:14px 18px;border-radius:14px;
-            background:linear-gradient(135deg,rgba(200,160,120,.12),rgba(180,140,100,.06));
-            border:1px solid rgba(200,160,120,.3);
-            box-shadow:0 4px 20px rgba(180,140,100,.06)
+            padding:16px 20px;border-radius:16px;
+            background:linear-gradient(135deg,rgba(200,160,120,.1),rgba(180,140,100,.05));
+            border:1px solid rgba(200,160,120,.25)
         }
-        .donate-rank-item.top3 .rank-num{font-size:18px;color:#c8a078}
-        .donate-rank-item.top3 .rank-name{font-size:17px;font-weight:800}
-        .donate-rank-item.top3 .rank-amt{font-size:17px}
+        .donate-rank-item.top3 .rank-avatar{background:none;box-shadow:none;width:44px;height:44px;font-size:24px}
+        .donate-rank-item.top3 .rank-name{font-size:16px;font-weight:800}
+        .donate-rank-item.top3 .rank-amt{font-size:19px}
 
         .donate-rank-empty{font-size:14px;color:var(--muted);padding:30px 0;text-align:center}
         .donate-qr-bar{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);text-align:center}

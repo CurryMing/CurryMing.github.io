@@ -708,13 +708,19 @@ const DEFAULT_VIDEOS = [];
         for (let i = 0; i < 3; i++) {
             podiums.push(list[i] ? list[i] : { name: "虚位以待", amount: null });
         }
-        elDonateRank.innerHTML = podiums.map((item, i) => `
+        elDonateRank.innerHTML = podiums.map((item, i) => {
+            const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+            const label = i === 0 ? "🏆 榜一大哥" : i === 1 ? "🥈 榜二" : "🥉 榜三";
+            return `
             <div class="donate-rank-item ${i === 0 ? "top1" : i === 1 ? "top2" : "top3"}">
-                <span class="rank-num">${i === 0 ? "👑" : i === 1 ? "🥈" : "🥉"}</span>
-                <span class="rank-name">${item.name}</span>
-                <span class="rank-amt">${item.amount != null ? "¥" + Number(item.amount).toFixed(2) : "--"}</span>
+                <div class="rank-avatar"><span class="rank-avatar-inner">${medal}</span></div>
+                <div class="rank-info">
+                    <div class="rank-name">${item.name}</div>
+                    <div class="rank-label">${item.amount != null ? label : "虚位以待"}</div>
+                </div>
+                <div class="rank-amt">${item.amount != null ? "¥" + Number(item.amount).toFixed(2) : "--"}</div>
             </div>
-        `).join("");
+        `}).join("");
     }
 
     function bindEvents(){
