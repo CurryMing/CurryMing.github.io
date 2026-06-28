@@ -689,7 +689,18 @@ const DEFAULT_VIDEOS = [];
 
     function renderDonateRank(){
         if (!elDonateRank) return;
-        const list = (window.DONATIONS || []).slice();
+        try {
+            fetch("assets/donate/donations.json", { cache: "no-store" })
+                .then(r => r.ok ? r.json() : [])
+                .then(list => renderDonateList(list))
+                .catch(() => renderDonateList([]));
+        } catch(e) {
+            renderDonateList([]);
+        }
+    }
+
+    function renderDonateList(list){
+        if (!Array.isArray(list)) list = [];
         if (!list.length) {
             elDonateRank.innerHTML = '<div class="donate-rank-empty">暂无打赏记录，快来当榜一大哥吧 🏆</div>';
             return;

@@ -236,7 +236,7 @@
         .donate-rank-item.top1{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,180,0,.08));border:1px solid rgba(255,215,0,.3)}
         .donate-rank-item.top1 .rank-num{color:#ffd700;font-size:16px}
         .donate-rank-item.top1 .rank-name{font-weight:800;font-size:15px}
-        .donate-rank-item.top1 .rank-amt{color:#ffd700;font-size:15px}
+        .donate-rank-item.top1 .rank-amt{color:#ff6a00;font-size:16px;text-shadow:0 0 8px rgba(255,106,0,.3)}
         .donate-rank-empty{font-size:13px;color:var(--muted);padding:12px 0}
         .action-toast{
             position:fixed;right:16px;top:14px;z-index:9999;padding:10px 14px;border-radius:12px;
